@@ -74,3 +74,7 @@ The latest polish adds an original 40-second lounge loop with effect ducking, a 
 SDK packages and base avatar wearables are provided by Decentraland. Metadata and thumbnail origins are in docs/catalog-selected.json; models load from Decentraland content servers. Third-party assets retain their respective rights. This repository grants no new license over them.
 
 Audio: `scripts/generate-lounge-audio.py` generates the original lounge loop and transition chime without third-party samples. Music plays globally and fades down for local feedback, then returns without restarting the loop.
+
+## Standalone development files
+
+Instructions and SDK skills are bundled in this repository. See [project status and recovery notes](docs/PROJECT-STATUS.md). Local historical backups live in `backups/` and are excluded from Git and scene deployment. Move the entire project folder outside its parent before deleting that parent.

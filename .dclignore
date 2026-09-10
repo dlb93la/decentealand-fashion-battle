@@ -15,3 +15,7 @@ scripts/
 *.log
 assets/Audio/count*.wav
 assets/Audio/bell.mp3
+
+backups/
+cursor.config
+cursorignore

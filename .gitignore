@@ -8,7 +8,6 @@ main.crdt
 .env.*
 !.env.example
 .DS_Store
-.agents/
 .claude/
 # Historical working notes and screenshots remain on disk.
 HANDOFF-*.md
@@ -21,3 +20,7 @@ docs/*
 !docs/catalog-selected.json
 !docs/base-wearables.json
 !docs/catalog-size-measurements.json
+
+# Local recovery copies; source and instructions are tracked normally.
+backups/
+!docs/PROJECT-STATUS.md
