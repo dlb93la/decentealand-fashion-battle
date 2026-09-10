@@ -65,9 +65,9 @@ The local wardrobe dresses NPC avatars; it does not grant wearable ownership. Na
 
 The loop, bots, wardrobe, pair voting, session points, cosmetic shop and Hall of Fame are implemented. The coordinator is an elected client, not a trusted backend. Points and history persist only for the shared session.
 
-Android avatar visibility and emote compatibility remain a release gate pending device retest after the latest fixes. Browser checks do not substitute for device testing. See docs/avatar-mobile-fixes.md.
+Android avatar visibility/emotes and a complete two-device round were validated by the project owner after the fixes. See docs/avatar-mobile-fixes.md for the implementation history.
 
-Before submission: finish Android/two-device QA, publish the scene to Decentraland and record a complete round. A GitHub repository does not publish a playable realm.
+Publication is the current remaining task. Configure the authorized destination before running `npm run deploy` (LAND) or `npm run deploy:world` (World). World deployment requires `worldConfiguration.name` in scene.json and a signature from an authorized wallet. A GitHub repository does not publish a playable realm.
 
 ## Third-party content
 
