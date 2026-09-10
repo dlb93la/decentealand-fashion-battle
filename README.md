@@ -4,9 +4,11 @@
 
 ## Run
 
-Use Node.js 22 LTS and npm. In this directory:
+Install Git and Node.js 22 LTS (includes npm). Clone and run:
 
 ```sh
+git clone https://github.com/dlb93la/decentealand-fashion-battle.git
+cd decentealand-fashion-battle
 npm ci
 npm test
 npm run build
@@ -14,6 +16,10 @@ npm start
 ```
 
 Port: 8010. Only Fashion Battle is included here. The older scene remains in the original workspace and is not a dependency.
+
+The default branch is `codex/hackathon-mvp`; cloning checks it out automatically. To continue development on another machine, run `git pull --ff-only` before editing and commit/push your changes when finished. Run `npm ci` again when the lockfile changes. Avoid editing the same files simultaneously on two machines without first synchronizing commits.
+
+No `.env`, private assets or credentials are needed to build and preview. Internet access is required to install dependencies and load Decentraland avatars. Publishing the scene is a separate step from cloning or publishing this repository.
 
 ## Mobile preview
 
