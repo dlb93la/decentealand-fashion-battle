@@ -11,7 +11,7 @@ export class UiController {
   tab: UiTab = 'game'
   rankingPeriod: import('../rankings').RankingPeriod = 'all'
   message = ''
-  category = 1 // Top by default
+  category = 0 // Superior
   lastPhase = ''
   lastRound = -1
   wardrobeOpen = false

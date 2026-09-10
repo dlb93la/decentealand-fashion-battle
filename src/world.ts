@@ -12,6 +12,7 @@ import {
   AvatarAnchorPointType,
   LightSource,
   AudioSource,
+  EngineInfo,
   AvatarModifierArea,
   AvatarModifierType
 } from '@dcl/sdk/ecs'
@@ -300,15 +301,16 @@ export class FashionWorld {
   hallSign: Entity
   clockLeft: Entity
   clockRight: Entity
-  audioVoice: Entity
-  audioBell: Entity
+  audioMusic: Entity
+  private audioPending?: { clip: string; duration: number; delay: number }
+  private audioHold = 0
+  private musicVolume = 0
   audioFeedback: Entity
   lastFeedbackPhase = ''
   lastVoteSound = ''
   names: Entity[] = []
   time = 0
   privacyArea: Entity
-  lastCue = ''
   lastCountdownPlayed = false
 
   constructor() {
@@ -628,22 +630,9 @@ export class FashionWorld {
     // ==========================================
     // 10. AUDIO SYSTEM (GLOBAL COUNTDOWN & CHIMES)
     // ==========================================
-    this.audioVoice = engine.addEntity()
-    AudioSource.create(this.audioVoice, {
-      audioClipUrl: 'assets/Audio/countdown_voice.wav',
-      loop: false,
-      playing: false,
-      global: true,
-      volume: 1.0
-    })
-
-    this.audioBell = engine.addEntity()
-    AudioSource.create(this.audioBell, {
-      audioClipUrl: 'assets/Audio/bell.mp3',
-      loop: false,
-      playing: false,
-      global: true,
-      volume: 0.85
+    this.audioMusic = engine.addEntity()
+    AudioSource.create(this.audioMusic, {
+      audioClipUrl: 'assets/Audio/lounge.wav', playing: true, loop: true, global: true, volume: 0
     })
     this.audioFeedback = engine.addEntity()
     AudioSource.create(this.audioFeedback, {
@@ -651,22 +640,36 @@ export class FashionWorld {
     })
   }
 
-  playCountdownVoice() {
-    AudioSource.playSound(this.audioVoice, 'assets/Audio/countdown_voice.wav')
+  private cue(clip: string, duration: number) {
+    this.audioPending = { clip, duration, delay: 0.25 }
   }
 
-  playBellChime() {
-    AudioSource.playSound(this.audioBell, 'assets/Audio/bell.mp3')
+  private tickAudio(dt: number) {
+    this.audioHold = Math.max(0, this.audioHold - dt)
+    const hidden = EngineInfo?.getOrNull(engine.RootEntity)?.sceneHidden ?? false
+    const target = hidden || this.audioPending || this.audioHold > 0 ? 0 : 0.22
+    const step = dt * (target === 0 ? 0.88 : 0.18)
+    this.musicVolume += Math.sign(target - this.musicVolume) * Math.min(step, Math.abs(target - this.musicVolume))
+    const music = AudioSource.get(this.audioMusic)
+    if (Math.abs((music.volume || 0) - this.musicVolume) > 0.0001)
+      AudioSource.getMutable(this.audioMusic).volume = this.musicVolume
+    if (this.audioPending) {
+      this.audioPending.delay -= dt
+      if (this.audioPending.delay <= 0) {
+        AudioSource.playSound(this.audioFeedback, this.audioPending.clip)
+        this.audioHold = this.audioPending.duration
+        this.audioPending = undefined
+      }
+    }
   }
+
 
   update(s: State, outfit: Outfit, pose: number, dt: number, owned: string[] = [], myPlayerId = '', previewAngle = 0) {
     this.time += dt
-    const phaseKey = `${s.round}:${s.phase}`
+    const phaseKey = `${s.round}:${s.phase}:${s.duelIndex}`
     if (phaseKey !== this.lastFeedbackPhase) {
       this.lastFeedbackPhase = phaseKey
-      if (s.phase === 'THEME_REVEAL' || s.phase === 'RESULTS') {
-        AudioSource.playSound(this.audioFeedback, `assets/Audio/${s.phase === 'RESULTS' ? 'victory' : 'theme'}.wav`)
-      }
+      if (s.phase !== 'LOBBY') this.cue('assets/Audio/transition.wav', 3)
     }
     const voteDuel = s.duels[s.duelIndex]
     const confirmedChoice = s.ballots[myPlayerId]
@@ -674,7 +677,7 @@ export class FashionWorld {
     if (s.phase === 'VOTING' && voteDuel && myPlayerId !== voteDuel.aId && myPlayerId !== voteDuel.bId &&
       (confirmedChoice === voteDuel.aId || confirmedChoice === voteDuel.bId) && this.lastVoteSound !== voteKey) {
       this.lastVoteSound = voteKey
-      AudioSource.playSound(this.audioFeedback, 'assets/Audio/vote.wav')
+      this.cue('assets/Audio/vote.wav', 0.4)
     }
 
     const privacy = ['THEME_REVEAL', 'PREPARATION'].includes(s.phase)
@@ -710,23 +713,7 @@ export class FashionWorld {
     TextShape.getMutable(this.clockLeft).text = clockString
     TextShape.getMutable(this.clockRight).text = clockString
 
-    // One short clip per boundary keeps spoken seconds aligned with the authority timer.
-    const count =
-      s.phase === 'PREPARATION'
-        ? Math.ceil(s.remaining)
-        : s.phase === 'RUNWAY'
-          ? Math.ceil(s.remaining - CONFIG.duelPose)
-          : 0
-    const cue = s.round + ':' + s.phase + ':' + s.duelIndex + ':' + count
-    if (count >= 1 && count <= 3 && cue !== this.lastCue) {
-      this.lastCue = cue
-      AudioSource.playSound(this.audioVoice, 'assets/Audio/count-' + count + '.wav')
-    }
-    const revealCue = s.round + ':reveal:' + s.duelIndex
-    if (s.phase === 'RUNWAY' && count <= 0 && this.lastCue !== revealCue) {
-      this.lastCue = revealCue
-      this.playBellChime()
-    }
+    this.tickAudio(dt)
 
     // Theme banner text on backstage wall
     TextShape.getMutable(this.themeBanner).text =

@@ -3,7 +3,7 @@ import { UiEntity, Label } from './primitives'
 import { FashionNetwork } from '../network'
 import { THEME_COLORS, UI_DIMENSIONS, panelWidth } from './theme'
 import { UiController, uiController } from './controller'
-import { HeaderPill, TopRightBadge, CameraShortcuts, ActionButton } from './components'
+import { HeaderPill, TopRightBadge, ActionButton } from './components'
 import { LobbyView } from './views/lobby'
 import { PreparationView } from './views/preparation'
 import { RunwayView } from './views/runway'
@@ -100,11 +100,6 @@ export function renderUi(n: FashionNetwork, controller: UiController = uiControl
       {['LOBBY', 'RESULTS', 'RETURN_TO_LOBBY'].includes(s.phase) ? (
         <TopRightBadge stylePoints={stylePoints} activeTab={activeTab} controller={controller} />
       ) : null}
-
-      {/* 3. Discreet Camera Shortcuts at Bottom Left */}
-      {activeTab === 'game' && !controller.wardrobeOpen &&
-        ['LOBBY', 'THEME_REVEAL', 'PREPARATION', 'RETURN_TO_LOBBY'].includes(s.phase) ?
-        <CameraShortcuts controller={controller} bottom={s.phase === 'PREPARATION' ? (panelWidth(360) < 300 ? 184 : 128) : 84} /> : null}
 
       {/* 4. Active Contextual Action Views or Modals */}
       {activeTab === 'shop' ? (

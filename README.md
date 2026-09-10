@@ -41,7 +41,7 @@ Do not use localhost or 127.0.0.1 on the phone. Keep the preview running. To dia
 
 1. Join the lobby; rounds start automatically. Bots fill empty places up to six contestants.
 2. Read the theme and dress your show avatar during the 90-second preparation.
-3. Tap VESTIR for the fitting view. Browse categories, style filters, thumbnails and pages. GIRAR LOOK rotates the preview. Main wardrobe items are free.
+3. Tap VESTIR for the fitting view. Browse clothing groups, garment types, larger thumbnails and explicit pages in the left panel. GIRAR LOOK rotates the preview. Main wardrobe items are free.
 4. Tap READY or let the timer finish. Shared models stay neutral during preparation and reveal when the runway starts.
 5. Each pair has 20 seconds to pose while rotating, then up to 10 seconds of voting. Voting ends early when everyone eligible votes. Duelists cannot vote in their own duel.
 6. View results, Style Points and the champion in the Hall of Fame. The next round starts automatically.
@@ -67,8 +67,10 @@ The loop, bots, wardrobe, pair voting, session points, cosmetic shop and Hall of
 
 Android avatar visibility/emotes and a complete two-device round were validated by the project owner after the fixes. See docs/avatar-mobile-fixes.md for the implementation history.
 
-Publication is the current remaining task. Configure the authorized destination before running `npm run deploy` (LAND) or `npm run deploy:world` (World). World deployment requires `worldConfiguration.name` in scene.json and a signature from an authorized wallet. A GitHub repository does not publish a playable realm.
+The latest polish adds an original 40-second lounge loop with effect ducking, a three-second transition chime, and a larger left-hand wardrobe. The new layout and audio still need an on-device playthrough before publication. Configure the authorized destination before running `npm run deploy` (LAND) or `npm run deploy:world` (World). World deployment is configured for `leined.eth` in scene.json and a signature from an authorized wallet. A GitHub repository does not publish a playable realm.
 
 ## Third-party content
 
 SDK packages and base avatar wearables are provided by Decentraland. Metadata and thumbnail origins are in docs/catalog-selected.json; models load from Decentraland content servers. Third-party assets retain their respective rights. This repository grants no new license over them.
+
+Audio: `scripts/generate-lounge-audio.py` generates the original lounge loop and transition chime without third-party samples. Music plays globally and fades down for local feedback, then returns without restarting the loop.

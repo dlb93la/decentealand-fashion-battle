@@ -161,7 +161,7 @@ test('audio cues fire once per event and ballots from other players remain silen
   const update = (id = 'local') => world.update(s, outfit, 0, 0.2, [], id)
   s.phase = 'THEME_REVEAL'
   update(); update()
-  assert.deepEqual(ecs.AudioSource.calls, ['assets/Audio/theme.wav'])
+  assert.deepEqual(ecs.AudioSource.calls, ['assets/Audio/transition.wav'])
   s.phase = 'VOTING'
   s.duels = [{ aId: 'a', bId: 'b' }, { aId: 'c', bId: 'd' }]
   s.ballots = { other: 'a' }
@@ -178,7 +178,7 @@ test('audio cues fire once per event and ballots from other players remain silen
   assert.equal(ecs.AudioSource.calls.length, 3)
   s.phase = 'RESULTS'
   update(); update()
-  assert.equal(ecs.AudioSource.calls.at(-1), 'assets/Audio/victory.wav')
+  assert.equal(ecs.AudioSource.calls.at(-1), 'assets/Audio/transition.wav')
   assert.equal(ecs.AudioSource.calls.length, 4)
 })
 
@@ -292,4 +292,23 @@ test('stage relocation resets locomotion by replacing the entity and preserves a
   assert.equal(ecs.AvatarShape.get(f.root).id, f.id)
   assert.equal(ecs.AvatarShape.get(f.root).expressionTriggerId, 'urn:decentraland:off-chain:base-emotes:disco')
   assert.equal(ecs.Transform.get(f.root).position.x, 10.9)
+})
+
+test('music fades out before effects and returns smoothly without restarting its loop', () => {
+  const { world, ecs, s, outfit } = fixture()
+  const tick = () => world.update(s, outfit, 0, 0.05)
+  for (let i = 0; i < 40; i++) tick()
+  const music = ecs.AudioSource.get(world.audioMusic)
+  assert.ok(music.loop && music.global && music.playing)
+  assert.ok(music.volume > 0.2)
+  s.phase = 'PREPARATION'; s.remaining = 80
+  tick()
+  assert.ok(music.volume > 0 && music.volume < 0.22)
+  assert.equal(ecs.AudioSource.calls?.length || 0, 0)
+  for (let i = 0; i < 8; i++) tick()
+  assert.equal(music.volume, 0)
+  assert.deepEqual(ecs.AudioSource.calls, ['assets/Audio/transition.wav'])
+  for (let i = 0; i < 90; i++) tick()
+  assert.ok(music.volume > 0.2)
+  assert.equal(ecs.AudioSource.calls.length, 1)
 })

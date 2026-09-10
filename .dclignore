@@ -11,3 +11,7 @@ agent/
 skills-lock.json
 docs/
 scripts/
+
+*.log
+assets/Audio/count*.wav
+assets/Audio/bell.mp3

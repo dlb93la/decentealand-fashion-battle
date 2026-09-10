@@ -28,7 +28,7 @@ export class Presentation {
       this.dressing = dressing
       if (dressing) {
         Transform.getMutable(this.camera).position = { x: 5.8, y: 1.7, z: 9.7 }
-        Transform.getMutable(this.target).position = { x: 3.5, y: 1.35, z: 12 }
+        Transform.getMutable(this.target).position = { x: 2.5, y: 1.35, z: 11 }
         MainCamera.createOrReplace(engine.CameraEntity, { virtualCameraEntity: this.camera })
       } else {
         if (MainCamera.has(engine.CameraEntity))

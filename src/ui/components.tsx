@@ -89,7 +89,7 @@ export function ActionButton(props: {
         if (!disabled) action()
       }}
     >
-      {props.thumbnail ? <UiEntity uiTransform={{ width: 36, height: 40, flexShrink: 0, pointerFilter: 'none' }}
+      {props.thumbnail ? <UiEntity uiTransform={{ width: Math.min(64, height - 8), height: Math.min(72, height - 8), flexShrink: 0, pointerFilter: 'none' }}
         uiBackground={{ textureMode: 'stretch', texture: { src: props.thumbnail } }} /> : null}
       <Label
         value={value}
@@ -114,15 +114,17 @@ export function HeaderPill(props: { state: State; memberCount: number }) {
 
   const themeTitle = s.phase === 'LOBBY' ? 'FASHION BATTLE' : THEMES[s.theme].title.toUpperCase()
   const localizedPhase = localizePhase(s.phase)
-  const narrow = UI_DIMENSIONS.headerPillWidth < 360
+  const dressing = s.phase === 'PREPARATION'
+  const pillWidth = dressing ? Math.min(330, UI_DIMENSIONS.headerPillWidth * 0.7) : UI_DIMENSIONS.headerPillWidth
+  const narrow = dressing || pillWidth < 360
 
   return (
     <UiEntity
       uiTransform={{
         positionType: 'absolute',
-        position: { top: 14, left: '50%' },
-        margin: { left: -UI_DIMENSIONS.headerPillWidth / 2 },
-        width: UI_DIMENSIONS.headerPillWidth,
+        position: dressing ? { top: 14, right: 12 } : { top: 14, left: '50%' },
+        margin: dressing ? {} : { left: -pillWidth / 2 },
+        width: pillWidth,
         height: narrow ? 78 : UI_DIMENSIONS.headerPillHeight,
         flexDirection: narrow ? 'column' : 'row',
         alignItems: 'center',
@@ -197,29 +199,6 @@ export function TopRightBadge(props: { stylePoints: number; activeTab: string; c
         fontSize={13}
         active={activeTab === 'rank'}
       />
-    </UiEntity>
-  )
-}
-
-export function CameraShortcuts(props: { controller: UiController; bottom?: number }) {
-  const { controller: ctrl, bottom = 24 } = props
-  const locations = [
-    { name: 'PROVADOR OESTE', position: { x: 5.8, y: 0.35, z: 10 }, target: { x: 3.5, y: 1.4, z: 12 } },
-    { name: 'PROVADOR LESTE', position: { x: 18.2, y: 0.35, z: 10 }, target: { x: 20.5, y: 1.4, z: 12 } },
-    { name: 'PALCO', position: { x: 12, y: 0.35, z: 5.5 }, target: { x: 12, y: 1.4, z: 14 } },
-    { name: 'HALL OF FAME', position: { x: 34.5, y: 0.35, z: 15 }, target: { x: 38, y: 1.4, z: 18 } }
-  ]
-  return (
-    <UiEntity uiTransform={{ positionType: 'absolute', position: { left: '50%', bottom },
-      margin: { left: -140 }, width: 280, flexDirection: 'column', alignItems: 'center' }}>
-      {ctrl.locationsOpen ? <UiEntity uiTransform={{ width: 280, height: 104,
-        flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
-        {locations.map((location) => <ActionButton key={location.name} value={location.name}
-          width={128} height={44} fontSize={12}
-          action={() => ctrl.teleport(location.position, location.target, location.name)} />)}
-      </UiEntity> : null}
-      <ActionButton value={ctrl.locationsOpen ? 'FECHAR LOCAIS' : 'LOCAIS'} width={136} height={44}
-        fontSize={13} action={() => { ctrl.locationsOpen = !ctrl.locationsOpen }} />
     </UiEntity>
   )
 }
