@@ -1,0 +1,48 @@
+{
+  "ecs7": true,
+  "runtimeVersion": "7",
+  "main": "bin/index.js",
+  "display": {
+    "title": "Decentealand Fashion Battle",
+    "description": "Dress. Pose. Vote. Win. Repeat."
+  },
+  "scene": {
+    "parcels": [
+      "0,0",
+      "0,1",
+      "1,0",
+      "1,1",
+      "2,0",
+      "2,1"
+    ],
+    "base": "0,0"
+  },
+  "skyboxConfig": {
+    "fixedTime": 43200
+  },
+  "spawnPoints": [
+    {
+      "name": "Fashion lobby",
+      "default": true,
+      "position": {
+        "x": 12,
+        "y": 0.2,
+        "z": 4
+      },
+      "cameraTarget": {
+        "x": 12,
+        "y": 2,
+        "z": 14
+      }
+    }
+  ],
+  "requiredPermissions": [
+    "ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE",
+    "ALLOW_TO_TRIGGER_AVATAR_EMOTE"
+  ],
+  "tags": [
+    "fashion",
+    "game",
+    "social"
+  ]
+}

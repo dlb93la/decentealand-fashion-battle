@@ -1,0 +1,15 @@
+{
+  "name": "decentealand-fashion-battle",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "sdk-commands build",
+    "start": "sdk-commands start --web --port 8010",
+    "test": "node --test tests/*.cjs",
+    "start:mobile": "sdk-commands start --mobile --port 8010"
+  },
+  "devDependencies": {
+    "@dcl/js-runtime": "7.27.0",
+    "@dcl/sdk": "7.27.0"
+  }
+}

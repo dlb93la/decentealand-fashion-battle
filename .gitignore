@@ -1,0 +1,22 @@
+node_modules/
+bin/
+dist/
+coverage/
+main.crdt
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+.agents/
+.claude/
+# Historical working notes and screenshots remain on disk.
+HANDOFF-*.md
+IMPLEMENTATION.md
+CHECKLIST-GDD.md
+Decentealand Fashion Battle*AI Development Guide.md
+docs/*
+!docs/avatar-mobile-fixes.md
+!docs/avatar-catalog.md
+!docs/catalog-selected.json
+!docs/catalog-size-measurements.json
