@@ -2,6 +2,9 @@
   "ecs7": true,
   "runtimeVersion": "7",
   "main": "bin/index.js",
+  "worldConfiguration": {
+    "name": "leined.eth"
+  },
   "display": {
     "title": "Decentealand Fashion Battle",
     "description": "Dress. Pose. Vote. Win. Repeat."
