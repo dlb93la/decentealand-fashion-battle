@@ -12,7 +12,7 @@ Changes confined to Fashion Battle:
 
 Validation: 54 automated tests passed; SDK build/type checking passed. Regression coverage includes zero-scale avoidance, stationary transforms, bounded emote replay, relocation resets and NPC exclusion from privacy volume. Local preview wearable metadata resolves to public HTTPS content URLs (not localhost).
 
-Visual follow-up: background idle confirmed in Bevy. Relocation still caused stage running, so AvatarShape entities are now replaced only on actual relocation, preserving avatar IDs, appearance and attached effects. Stage idle and turntable rotation were then observed. Fully qualified base-emote URNs are used for NPC expressions; player actions retain the native short names. Final emote playback and Android visibility still require visual confirmation.
+Visual follow-up: background idle confirmed in Bevy. Relocation still caused stage running, so AvatarShape entities are now replaced only on actual relocation, preserving avatar IDs, appearance and attached effects. Stage idle and turntable rotation were then observed. Fully qualified base-emote URNs are used for NPC expressions; player actions retain the native short names. Selecting Dance was observed animating the stage NPC. Android visibility and animation still require device confirmation; not every emote has been visually checked.
 
 Android root cause is not confirmed without device logs/retest. Mobile source supports AvatarShape, but arbitrary NPC IDs are not always forwarded to avatar exclusion matching. No claim of full mobile validation. Reopen the app and the existing QR to discard the old scene/avatar state.
 

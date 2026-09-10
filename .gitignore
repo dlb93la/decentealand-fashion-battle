@@ -19,4 +19,5 @@ docs/*
 !docs/avatar-mobile-fixes.md
 !docs/avatar-catalog.md
 !docs/catalog-selected.json
+!docs/base-wearables.json
 !docs/catalog-size-measurements.json
