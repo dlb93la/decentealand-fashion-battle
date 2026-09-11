@@ -53,7 +53,10 @@ Do not use localhost or 127.0.0.1 on the phone. Keep the preview running. To dia
 ## Architecture
 
 - src/model.ts: state machine, votes, scoring and bots.
-- src/network.ts: CRDT presence, elected coordinator and snapshots.
+- src/network.ts: client intentions, heartbeat and private snapshot assembly.
+- src/server/: authoritative rules, scene presence, checkpoint restore and serialized persistence.
+- src/shared/messages.ts: statically registered message schemas and server status.
+- src/client/setup.ts: client-only world, UI and presentation initialization.
 - src/data.ts and src/catalog.ts: timing, themes, inventory and rewards.
 - src/world.ts and src/avatar-factory.ts: arena and NPC avatars.
 - src/presentation.ts and src/ui/: touch UI and cameras.
@@ -63,7 +66,9 @@ The local wardrobe dresses NPC avatars; it does not grant wearable ownership. Na
 
 ## Delivery status
 
-The loop, bots, wardrobe, pair voting, session points, cosmetic shop and Hall of Fame are implemented. The coordinator is an elected client, not a trusted backend. Points and history persist only for the shared session.
+This branch (`codex/authoritative-fashion-battle`) migrates the loop, votes, rewards and purchases to the Decentraland Multiplayer Server using the pinned auth-server SDK. It persists versioned checkpoints through Scene Storage, retries failed saves, and withholds future outfits and other players' ballots from snapshots. The standard-SDK fixes remain on `codex/gdd-alignment-fixes`. Run `npm ci` after switching branches.
+
+63 automated tests and the SDK build pass. Local headless preview reached its first scene tick; real multiplayer, production storage/cold starts and the latest mobile UI still require validation. The checkpoint is currently one scene-wide value: multi-instance writes and large account histories need testing before production. No scene was deployed. Saved wardrobe presets remain session-local.
 
 Android avatar visibility/emotes and a complete two-device round were validated by the project owner after the fixes. See docs/avatar-mobile-fixes.md for the implementation history.
 

@@ -80,6 +80,15 @@ export function renderUi(n: FashionNetwork, controller: UiController = uiControl
   const stylePoints = account?.points || 0
   const activeTab = controller.tab
 
+  if (!n.ready) return (
+    <UiEntity uiTransform={{ width: '100%', height: '100%', pointerFilter: 'none' }}>
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { left: 12, bottom: 24 },
+        width: panelWidth(440), height: 88, padding: 8 }} uiBackground={{ color: THEME_COLORS.glassBg }}>
+        <Label value={n.connectionMessage} fontSize={16} uiTransform={{ width: '100%', height: 72 }} />
+      </UiEntity>
+    </UiEntity>
+  )
+
   return (
     <UiEntity
       uiTransform={{
@@ -88,6 +97,7 @@ export function renderUi(n: FashionNetwork, controller: UiController = uiControl
         pointerFilter: 'none'
       }}
     >
+      {n.intentError ? <Label value={n.intentError} fontSize={16} uiTransform={{ positionType: 'absolute', position: { left: 12, top: 80 }, width: panelWidth(440), height: 60 }} /> : null}
       {/* 1. Minimalist Top Center Pill Bar */}
       <HeaderPill state={s} memberCount={n.members.length} />
       {s.phase === 'PREPARATION' && activeTab === 'game' ?

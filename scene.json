@@ -47,5 +47,6 @@
     "fashion",
     "game",
     "social"
-  ]
+  ],
+  "authoritativeMultiplayer": true
 }

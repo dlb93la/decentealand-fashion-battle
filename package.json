@@ -8,10 +8,11 @@
     "deploy:world": "sdk-commands deploy --target-content https://worlds-content-server.decentraland.org",
     "start": "sdk-commands start --web --port 8010",
     "test": "node --test tests/*.cjs",
-    "start:mobile": "sdk-commands start --mobile --port 8010"
+    "start:mobile": "sdk-commands start --mobile --port 8010",
+    "server-logs": "sdk-commands sdk-server-logs"
   },
   "devDependencies": {
-    "@dcl/js-runtime": "7.27.0",
-    "@dcl/sdk": "7.27.0"
+    "@dcl/js-runtime": "7.27.1-33533530571.commit-451d001",
+    "@dcl/sdk": "7.27.1-33533530571.commit-451d001"
   }
 }

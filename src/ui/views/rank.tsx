@@ -14,7 +14,7 @@ export function RankView(props: { state: State; controller: UiController }) {
     <UiEntity uiTransform={{ width: '100%', height: '100%', flexDirection: 'column' }}>
       <UiEntity uiTransform={{ width: '100%', height: 52, flexDirection: 'row', justifyContent: 'center' }}>
         {(['day', 'week', 'all'] as const).map((period, i) => (
-          <ActionButton key={period} value={['HOJE', 'SEMANA', 'SESSÃO'][i]} width={Math.min(100, (UI_DIMENSIONS.modalWidth - 50) / 3)}
+          <ActionButton key={period} value={['HOJE', 'SEMANA', 'GERAL'][i]} width={Math.min(100, (UI_DIMENSIONS.modalWidth - 50) / 3)}
             fontSize={12}
             active={controller.rankingPeriod === period} action={() => { controller.rankingPeriod = period }} />
         ))}

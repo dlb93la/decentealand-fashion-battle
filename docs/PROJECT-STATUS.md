@@ -5,8 +5,9 @@ This folder contains its own Git repository, package manifest/lockfile, dependen
 ## Current status
 - Mobile preview: port 8010 (`npm run start:mobile`).
 - World destination: `leined.eth`. Publication/signing remains pending.
-- Current fixes branch: `codex/gdd-alignment-fixes`. Per-duel reveal, 60-second preparation with early readiness, session preset restore, Back accessories, participant count and finalist SP are connected. UI has compact wardrobe selectors and a 16 px numeric text minimum.
-- 57 automated logic tests passed after the fixes; SDK bundle and type checking passed. No visual/mobile validation is claimed for this branch.
+- Current migration branch: `codex/authoritative-fashion-battle`; prior standard-SDK fixes remain on `codex/gdd-alignment-fixes`. Per-duel reveal, 60-second preparation with early readiness, session preset restore, Back accessories, participant count and finalist SP are connected. UI has compact wardrobe selectors and a 16 px numeric text minimum.
+- 63 automated tests passed after the migration; SDK bundle and type checking passed. No visual/mobile validation is claimed for this branch.
+- Server-owned voting/rewards, private snapshots, heartbeat readiness and durable checkpoints are implemented with the pinned auth-server SDK. Local headless preview on 8011 reached its first tick; production persistence, cold starts and multiplayer remain unverified. No scene deployment was performed.
 - The latest wardrobe layout, camera framing and audio still need owner validation on a phone.
 
 ## Preserved development material

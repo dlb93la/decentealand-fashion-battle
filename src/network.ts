@@ -1,168 +1,110 @@
-import { engine, Entity, Schemas, AvatarEquippedData, AvatarBase } from '@dcl/sdk/ecs'
-import { syncEntity, isStateSyncronized } from '@dcl/sdk/network'
+import { engine, AvatarEquippedData, AvatarBase } from '@dcl/sdk/ecs'
+import { isStateSyncronized } from '@dcl/sdk/network'
 import { getPlayer } from '@dcl/sdk/src/players'
 import { openExplorerUi } from '~system/RestrictedActions'
-import { LeaseObserver } from './shared/lease'
-import { initial, State, Member, step } from './model'
-import { inventory, validOutfit } from './data'
+import { initial, State, Member } from './model'
+import { inventory } from './data'
+import { room, ServerStatus, SNAPSHOT_CHARS, MAX_SNAPSHOT_CHUNKS } from './shared/messages'
 
 export async function openBackpack(): Promise<boolean> {
-  try {
-    const result = await openExplorerUi({ ui: 2 })
-    return result.openResult === 1 || result.openResult === 2
-  } catch (err) {
-    console.log('[FashionNetwork] Failed to open native backpack UI:', err)
-    return false
-  }
+  try { const result = await openExplorerUi({ ui: 2 }); return result.openResult === 1 || result.openResult === 2 }
+  catch { return false }
 }
 
-const Session = engine.defineComponent('fashion::session:v1', { json: Schemas.String })
-const Presence = engine.defineComponent('fashion::presence:v1', {
-  playerId: Schemas.String,
-  name: Schemas.String,
-  token: Schemas.String,
-  beat: Schemas.Int,
-  json: Schemas.String
-})
+/** Client sends intentions only. State, ballots and balances come exclusively from the server. */
 export class FashionNetwork {
   state: State = initial()
-  members: Member[] = []
+  members: { playerId: string; name: string }[] = []
   mine?: Member
-  private entity: Entity
-  private me?: Entity
-  private leases = new LeaseObserver()
-  private beat = 0
-  private elapsed = 0
-  private election = ''
-  private stable = 0
-  private cached = ''
   ready = false
   nativeWardrobe = false
+  intentError = ''
+  connectionMessage = 'Conectando ao servidor do show...'
+  private clock = 0
+  private lastAlive = -Infinity
+  private beat?: number
+  private epoch = ''
+  private applied = -1
+  private assembling = -1
+  private chunks = new Map<number, string>()
+  private count = 0
+  private sent = 0
+  private dirty = true
+  private status = 'loading'
+
   constructor() {
-    this.entity = engine.addEntity()
-    Session.create(this.entity, { json: JSON.stringify(initial()) })
-    syncEntity(this.entity, [Session.componentId], 9800)
-  }
-  update(data: Partial<Member>) {
-    if (!this.mine || !this.me) return
-    this.mine = { ...this.mine, ...data }
-    Presence.createOrReplace(this.me, {
-      playerId: this.mine.playerId,
-      name: this.mine.name,
-      token: this.mine.token,
-      beat: this.mine.beat,
-      json: JSON.stringify(this.mine)
+    // The pinned Room implementation filters server origin before invoking client callbacks.
+    // Unlike server callbacks, client callbacks deliberately receive no sender context.
+    room.onMessage('snapshot', (data) => {
+      if (data.epoch !== this.epoch ||
+        data.revision <= this.applied || data.count < 1 || data.count > MAX_SNAPSHOT_CHUNKS ||
+        data.index < 0 || data.index >= data.count || data.json.length > SNAPSHOT_CHARS) return
+      if (data.revision < this.assembling) return
+      if (data.revision !== this.assembling) {
+        this.chunks.clear(); this.assembling = data.revision; this.count = data.count
+      }
+      if (this.count !== data.count) return
+      this.chunks.set(data.index, data.json)
+      if (this.chunks.size !== this.count) return
+      try {
+        const json = Array.from({ length: this.count }, (_, i) => this.chunks.get(i)!).join('')
+        const result = JSON.parse(json) as { state: State; people: { playerId: string; name: string }[] }
+        if (!result.state || !Array.isArray(result.state.cast) || !Array.isArray(result.people)) return
+        this.state = result.state; this.members = result.people
+        this.applied = data.revision; this.lastAlive = this.clock
+      } catch { /* Keep the last complete snapshot; never apply a partial one. */ }
+      this.chunks.clear()
     })
   }
+
+  update(data: Partial<Member>) {
+    if (!this.mine) return
+    this.mine = { ...this.mine, ...data }
+    this.dirty = true
+  }
+
   tick(dt: number) {
-    if (!isStateSyncronized()) return
-    const p = getPlayer()
-    const equipped =
-      typeof AvatarEquippedData?.getOrNull === 'function' && engine?.PlayerEntity !== undefined
-        ? AvatarEquippedData.getOrNull(engine.PlayerEntity)
-        : null
-    const bodyShape =
-      typeof AvatarBase?.getOrNull === 'function' && engine?.PlayerEntity !== undefined
-        ? AvatarBase.getOrNull(engine.PlayerEntity)?.bodyShapeUrn || p?.avatar?.bodyShapeUrn
-        : p?.avatar?.bodyShapeUrn
-    const liveWearables =
-      equipped?.wearableUrns && equipped.wearableUrns.length > 0
-        ? equipped.wearableUrns
-        : p?.wearables && p.wearables.length > 0
-          ? p.wearables
-          : undefined
-
-    if (!this.me && p?.userId) {
-      this.me = engine.addEntity()
-      const initialOutfit = inventory.initial()
-      if (bodyShape) {
-        initialOutfit.bodyShape = bodyShape
+    this.clock += dt; this.sent += dt
+    if (!isStateSyncronized()) { this.ready = false; return }
+    for (const [, status] of engine.getEntitiesWith(ServerStatus)) {
+      if (status.epoch !== this.epoch) {
+        this.epoch = status.epoch; this.applied = -1; this.assembling = -1
+        this.chunks.clear(); this.beat = undefined; this.lastAlive = -Infinity; this.dirty = true
       }
-      this.mine = {
-        playerId: p.userId.toLowerCase(),
-        name: p.name.replace(/[<>\r\n]/g, '').slice(0, 20),
-        token: `${p.userId}:${Date.now()}:${Math.random()}`,
-        beat: 0,
-        outfit: initialOutfit,
-        pose: 0,
-        ready: false,
-        round: 0,
-        vote: '',
-        purchase: ''
-      }
-      this.update({})
-      syncEntity(this.me, [Presence.componentId])
+      if (this.beat !== undefined && this.beat !== status.beat) this.lastAlive = this.clock
+      this.beat = status.beat; this.status = status.status
+      break
     }
-
-    if (
-      this.nativeWardrobe &&
-      this.state.phase === 'PREPARATION' &&
-      this.state.remaining > 1 &&
-      this.mine &&
-      liveWearables &&
-      liveWearables.length > 0
-    ) {
-      const current = this.mine.outfit.customWearables || []
-      const changed =
-        current.length !== liveWearables.length ||
-        liveWearables.some((urn, idx) => urn !== current[idx]) ||
-        (bodyShape && bodyShape !== this.mine.outfit.bodyShape)
-      if (changed) {
-        this.update({
-          outfit: {
-            ...this.mine.outfit,
-            customWearables: [...liveWearables],
-            bodyShape: bodyShape || this.mine.outfit.bodyShape
-          }
-        })
-      }
+    const player = getPlayer()
+    if (!this.mine && player?.userId) {
+      const outfit = inventory.initial()
+      if (player.avatar?.bodyShapeUrn) outfit.bodyShape = player.avatar.bodyShapeUrn
+      this.mine = { playerId: player.userId.toLowerCase(), name: player.name.replace(/[<>\r\n]/g, '').slice(0, 20),
+        token: '', beat: 0, outfit, pose: 0, ready: false, round: 0, vote: '', purchase: '' }
     }
-    this.beat += dt
-    if (this.beat >= 2 && this.mine) {
-      this.beat = 0
-      this.update({ beat: this.mine.beat + 1 })
+    this.ready = !!this.mine && this.applied >= 0 && this.clock - this.lastAlive < 6 &&
+      this.status !== 'loading' && this.status !== 'storage-error'
+    this.connectionMessage = this.status === 'storage-error'
+      ? 'Não foi possível salvar. O show está pausado e tentará novamente.'
+      : 'Aguardando o servidor do show. A primeira conexão pode demorar.'
+    if (!this.mine || this.clock - this.lastAlive >= 6 || this.status === 'loading' || this.status === 'storage-error') return
+    if (this.nativeWardrobe && this.state.phase === 'PREPARATION' && this.state.remaining > 1) {
+      const equipped = AvatarEquippedData.getOrNull(engine.PlayerEntity)
+      const body = AvatarBase.getOrNull(engine.PlayerEntity)?.bodyShapeUrn || player?.avatar?.bodyShapeUrn
+      if (equipped?.wearableUrns.length && (JSON.stringify(equipped.wearableUrns) !== JSON.stringify(this.mine.outfit.customWearables) ||
+        body !== this.mine.outfit.bodyShape)) this.update({ outfit: { ...this.mine.outfit, bodyShape: body,
+          customWearables: [...equipped.wearableUrns] } })
     }
-    const unique = new Map<string, Member>()
-    for (const [e, presence] of engine.getEntitiesWith(Presence)) {
-      if (!this.leases.active(String(e), presence, Date.now() / 1000)) continue
-      try {
-        const m = JSON.parse(presence.json) as Member
-        if (m.playerId !== presence.playerId || m.token !== presence.token || !validOutfit(m.outfit)) continue
-        const old = unique.get(m.playerId)
-        if (!old || m.token < old.token) unique.set(m.playerId, m)
-      } catch {}
+    // Retry the latest intent: protects against cold starts and a checkpoint temporarily pausing reception.
+    if (this.sent < (this.dirty ? 0.2 : 2)) return
+    this.sent = 0; this.dirty = false
+    const { name, outfit, pose, ready, round, vote, voteDuel, purchase } = this.mine
+    const json = JSON.stringify({ name, outfit, pose, ready, round, vote, voteDuel, purchase })
+    if (json.length > SNAPSHOT_CHARS) {
+      this.intentError = 'Look grande demais para enviar. Escolha um look do catálogo da cena.'
+      return
     }
-    this.members = Array.from(unique.values()).sort((a, b) => a.token.localeCompare(b.token))
-    const raw = Session.get(this.entity).json
-    if (raw !== this.cached) {
-      try {
-        const s = JSON.parse(raw) as State
-        if (s && Array.isArray(s.cast) && s.accounts && Number.isFinite(s.remaining)) {
-          this.state = s
-          this.cached = raw
-        }
-      } catch {}
-    }
-    const leader = this.members.some((m) => m.token === this.state.leader)
-      ? this.state.leader
-      : this.members[0]?.token || ''
-    if (leader !== this.election) {
-      this.election = leader
-      this.stable = 0
-    }
-    this.stable += dt
-    this.ready = !!this.mine && this.stable > 3
-    this.elapsed += dt
-    if (!this.ready || this.elapsed < 0.2) return
-    const delta = this.elapsed
-    this.elapsed = 0
-    if (leader === this.mine?.token) {
-      this.state.leader = leader
-      step(this.state, this.members, delta, Date.now())
-      this.state.revision++
-      const json = JSON.stringify(this.state)
-      Session.createOrReplace(this.entity, { json })
-      this.cached = json
-    }
+    this.intentError = ''
+    void room.send('intent', { json }).catch(() => { this.dirty = true })
   }
 }
