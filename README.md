@@ -1,9 +1,16 @@
 <div align="center">
 
+<img src="docs/media/fit-check-logo.png" alt="Fit Check logo" width="200" />
+
 # FIT CHECK 👠
 ## Decentraland Fashion Battle
 
 ### **Dress. Pose. Vote. Win. Repeat.**
+
+![Decentraland SDK7](https://img.shields.io/badge/Decentraland-SDK7-FF2D83?style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Mobile First](https://img.shields.io/badge/Mobile-First-24754C?style=flat-square)
+[![MIT License](https://img.shields.io/badge/License-MIT-FFD676?style=flat-square)](LICENSE)
 
 **A mobile-first social fashion battle for Decentraland where players dress to a surprise theme, hit the runway, and let the audience decide who understood the assignment.**
 
