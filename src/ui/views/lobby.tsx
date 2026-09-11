@@ -40,7 +40,7 @@ export function LobbyView(props: { state: State; isConnecting: boolean }) {
       ? THEMES[s.theme].description
       : s.phase === 'RETURN_TO_LOBBY'
         ? 'Próxima rodada em instantes'
-        : 'Dress. Pose. Vote.'
+        : 'Vista seu modelo. Faça uma pose. Vote nos outros duelos.'
 
   return (
     <UiEntity
@@ -49,7 +49,7 @@ export function LobbyView(props: { state: State; isConnecting: boolean }) {
         position: { bottom: 32, left: '50%' },
         margin: { left: -panelWidth(520) / 2 },
         width: panelWidth(520),
-        height: 44,
+        height: 64,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
@@ -60,7 +60,7 @@ export function LobbyView(props: { state: State; isConnecting: boolean }) {
     >
       <Label
         value={text}
-        fontSize={14}
+          fontSize={16}
         color={THEME_COLORS.gold}
         textAlign="middle-center"
         uiTransform={{ width: '100%', height: '100%', pointerFilter: 'none' }}

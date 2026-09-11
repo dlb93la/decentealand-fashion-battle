@@ -40,9 +40,9 @@ Do not use localhost or 127.0.0.1 on the phone. Keep the preview running. To dia
 ## Play
 
 1. Join the lobby; rounds start automatically. Bots fill empty places up to six contestants.
-2. Read the theme and dress your show avatar during the 90-second preparation.
-3. Tap VESTIR for the fitting view. Browse clothing groups, garment types, larger thumbnails and explicit pages in the left panel. GIRAR LOOK rotates the preview. Main wardrobe items are free.
-4. Tap READY or let the timer finish. Shared models stay neutral during preparation and reveal when the runway starts.
+2. Read the theme and dress your show avatar during the 60-second preparation.
+3. Tap VESTIR for the fitting view. Browse clothing groups, garment types, larger thumbnails and explicit pages in the left panel. GIRAR LOOK rotates the preview. Main wardrobe items are free. Costas selects back accessories; Usar salvo restores your saved session outfit.
+4. Tap READY or let the timer finish. Once all present contestants are ready, preparation can end early after a minimum of 10 seconds. Shared models stay neutral during preparation and reveal only after their own duel countdown; future pairs remain neutral.
 5. Each pair has 20 seconds to pose while rotating, then up to 10 seconds of voting. Voting ends early when everyone eligible votes. Duelists cannot vote in their own duel.
 6. View results, Style Points and the champion in the Hall of Fame. The next round starts automatically.
 

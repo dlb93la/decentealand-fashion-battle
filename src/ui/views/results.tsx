@@ -7,7 +7,7 @@ export function ResultsView({ state: s, mine: m }: { state: State; mine?: Member
   const myResult = s.results.find((r) => r.id === m?.playerId)
   const width = panelWidth(380)
   const narrow = width < 340
-  const rowHeight = narrow ? 50 : 30
+  const rowHeight = 54
   return (
     <UiEntity
       uiTransform={{
@@ -24,9 +24,9 @@ export function ResultsView({ state: s, mine: m }: { state: State; mine?: Member
       {s.results.slice(0, 3).map((r, i) => (
         <Label
           key={r.id}
-          value={i + 1 + '. ' + r.name.slice(0, 24) + (narrow ? '\n' : ' / ') + r.votes + ' votos / ' + r.duelWins + 'V'}
+          value={`${i + 1}. ${r.name.slice(0, narrow ? 18 : 24)}\n${r.votes} votos / ${r.duelWins ?? 0}V / +${r.points} SP`}
           color={i === 0 ? THEME_COLORS.gold : THEME_COLORS.cream}
-          fontSize={narrow ? 14 : 16}
+          fontSize={16}
           uiTransform={{ width: '100%', height: rowHeight, flexShrink: 0 }}
         />
       ))}

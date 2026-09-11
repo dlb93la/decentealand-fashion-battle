@@ -40,7 +40,9 @@ export function Label(props: Parameters<typeof SdkLabel>[0]) {
   return (
     <SdkLabel
       {...props}
-      fontSize={typeof props.fontSize === 'number' ? props.fontSize * factor() : props.fontSize}
+      fontSize={typeof props.fontSize === 'number'
+        ? Math.max(16, props.fontSize) * factor()
+        : props.fontSize ?? 16 * factor()}
       uiTransform={transform(props.uiTransform)}
     />
   )

@@ -24,3 +24,6 @@ docs/*
 # Local recovery copies; source and instructions are tracked normally.
 backups/
 !docs/PROJECT-STATUS.md
+
+# SDK-generated reference context
+dclcontext/

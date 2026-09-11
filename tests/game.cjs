@@ -104,3 +104,23 @@ test('idle scene waits for player; all theme data remains selectable', () => {
   assert.equal(s.round, 0)
   assert.equal(s.phase, 'LOBBY')
 })
+
+test('ready shortens preparation after the minimum window, never for stale or unready contestants', () => {
+  const s = initial(), m = [member('a'), member('b')]
+  until(s, m, 'PREPARATION')
+  for (const person of m) { person.round = s.round; person.ready = true }
+  step(s, m, 1, 0)
+  assert.ok(s.remaining > 1)
+  s.remaining = CONFIG.preparation - CONFIG.minimumPreparation
+  m[1].ready = false
+  step(s, m, 0.2, 0)
+  assert.ok(s.remaining > 1)
+  m[1].ready = true; m[1].round--
+  step(s, m, 0.2, 0)
+  assert.ok(s.remaining > 1)
+  m[1].round = s.round
+  step(s, m, 0.2, 0)
+  assert.equal(s.remaining, 1)
+  step(s, m, 1, 0)
+  assert.equal(s.phase, 'RUNWAY')
+})

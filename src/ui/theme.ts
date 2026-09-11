@@ -38,17 +38,19 @@ export const UI_DIMENSIONS = {
   buttonHeightCompact: 40
 }
 
-/** Left-hand fitting panel in physical pixels; right half remains available for the avatar. */
+/** Compact selectors reserve touch-sized controls before choosing the item grid. */
 export function wardrobeLayout() {
   const c = UiCanvasInformation.getOrNull(engine.RootEntity)
   const inset = c?.interactableArea
   const w = (c?.width || 1280) - (inset?.left || 0) - (inset?.right || 0)
   const h = (c?.height || 720) - (inset?.top || 0) - (inset?.bottom || 0)
-  const width = Math.min(600, Math.max(280, w * 0.49 - 24))
+  const width = Math.min(Math.max(0, w - 24), 600, Math.max(280, w * 0.49 - 24))
   const available = h - 24
   const rowHeight = available < 390 ? 44 : 52
   const itemHeight = available < 390 ? 62 : 86
-  const pageSize = available >= 5 * rowHeight + 2 * (itemHeight + 8) + 24 ? 4 : 2
-  const height = 5 * rowHeight + Math.ceil(pageSize / 2) * (itemHeight + 8) + 24
-  return { width, height, rowHeight, itemHeight, pageSize }
+  const columns = width < 400 ? 1 : 2
+  const rows = available >= 4 * rowHeight + 2 * (itemHeight + 8) + 16 ? 2 : 1
+  const pageSize = rows * columns
+  const height = 4 * rowHeight + rows * (itemHeight + 8) + 16
+  return { width, height, rowHeight, itemHeight, pageSize, columns }
 }

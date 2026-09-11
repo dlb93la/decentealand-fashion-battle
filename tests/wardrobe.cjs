@@ -9,9 +9,9 @@ test('wardrobe groups preserve equip indices and do not expose placeholder backp
   assert.equal(new Set(all.map(i => i.slot + ':' + i.index)).size, all.length)
   for (const i of all) {
     assert.equal(inventory.items(i.slot)[i.index].name, i.name)
-    assert.ok(!['Backpack', 'Back'].includes(i.slot))
+    assert.notEqual(i.slot, 'Backpack')
   }
-  for (const slot of ['Top','Bottom','Shoes','Hair','Accessories','Glasses','Hat','Head','Eyes','Face','Effects'])
+  for (const slot of ['Top','Bottom','Shoes','Hair','Accessories','Glasses','Hat','Head','Eyes','Face','Effects','Back'])
     assert.equal(all.filter(i => i.slot === slot).length, inventory.items(slot).length)
   assert.ok(wardrobeGroups.find(g => g.name === 'Corpo todo').items.some(i => i.type === 'Macacões'))
   assert.ok(wardrobeGroups.find(g => g.name === 'Corpo todo').items.some(i => i.type === 'Vestidos'))

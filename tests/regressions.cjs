@@ -139,16 +139,25 @@ test('wardrobe closes at T-1 even for READY player; last accepted outfit stays f
   step(s, m, 0.2, 0)
   assert.equal(s.phase, 'RUNWAY')
 })
-test('all models stay private during preparation and reveal together at runway', () => {
+test('each pair stays private until its own countdown ends, including future duels', () => {
   const s = initial(),
     m = [member('p')]
   until(s, m, (s) => s.phase === 'PREPARATION')
   assert.ok(s.cast.every((c) => !outfitRevealed(s, c.id)))
   until(s, m, (s) => s.phase === 'RUNWAY')
+  assert.ok(s.cast.every((c) => !outfitRevealed(s, c.id)))
   s.remaining = CONFIG.duelPose
   assert.equal(outfitRevealed(s, s.duels[0].aId), true)
   assert.equal(outfitRevealed(s, s.duels[0].bId), true)
+  assert.equal(outfitRevealed(s, s.duels[1].aId), false)
+  until(s, m, (s) => s.phase === 'RUNWAY' && s.duelIndex === 1)
+  assert.equal(outfitRevealed(s, s.duels[0].aId), true)
+  assert.equal(outfitRevealed(s, s.duels[1].aId), false)
+  s.remaining = CONFIG.duelPose
   assert.equal(outfitRevealed(s, s.duels[1].aId), true)
+  assert.equal(outfitRevealed(s, s.duels[2].aId), false)
+  until(s, m, (s) => s.phase === 'RESULTS')
+  assert.ok(s.cast.every((c) => outfitRevealed(s, c.id)))
 })
 test('every reward displayed equals actual points added, including duel wins, for two rounds', () => {
   const s = initial(),

@@ -5,8 +5,8 @@ This folder contains its own Git repository, package manifest/lockfile, dependen
 ## Current status
 - Mobile preview: port 8010 (`npm run start:mobile`).
 - World destination: `leined.eth`. Publication/signing remains pending.
-- Latest gameplay change: wardrobe navigation and lounge audio polish, commit `0b834ad`.
-- 56 automated tests passed; SDK bundle and type checking passed before this documentation consolidation.
+- Current fixes branch: `codex/gdd-alignment-fixes`. Per-duel reveal, 60-second preparation with early readiness, session preset restore, Back accessories, participant count and finalist SP are connected. UI has compact wardrobe selectors and a 16 px numeric text minimum.
+- 57 automated logic tests passed after the fixes; SDK bundle and type checking passed. No visual/mobile validation is claimed for this branch.
 - The latest wardrobe layout, camera framing and audio still need owner validation on a phone.
 
 ## Preserved development material

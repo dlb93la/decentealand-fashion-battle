@@ -130,7 +130,13 @@ export function pendingVote(s: State, m?: Member): string {
 }
 
 export function outfitRevealed(s: State, id: string): boolean {
-  return s.cast.some((c) => c.id === id) && ['RUNWAY', 'VOTING', 'DUEL_RESULT', 'RESULTS'].includes(s.phase)
+  if (!s.cast.some((c) => c.id === id)) return false
+  if (s.phase === 'RESULTS') return true
+  if (!['RUNWAY', 'VOTING', 'DUEL_RESULT'].includes(s.phase)) return false
+  const index = s.duels.findIndex((duel) => duel.aId === id || duel.bId === id)
+  if (index < 0 || index > s.duelIndex) return false
+  if (index < s.duelIndex) return true
+  return s.phase !== 'RUNWAY' || s.remaining <= CONFIG.duelPose
 }
 
 export function currentDuelists(s: State): [Candidate | undefined, Candidate | undefined] {
@@ -350,6 +356,15 @@ export function step(s: State, members: Member[], dt: number, now: number) {
   }
 
   s.remaining = Math.max(0, s.remaining - Math.max(0, Math.min(dt, 1)))
+
+  // Ready shortens the wait only after everyone currently competing had time to dress.
+  // Keep the final second so clients close their wardrobe before the reveal.
+  if (s.phase === 'PREPARATION' && s.remaining <= CONFIG.preparation - CONFIG.minimumPreparation) {
+    const contestants = members.filter((m) => s.cast.some((c) => !c.bot && c.id === m.playerId))
+    if (contestants.length && contestants.every((m) => m.round === s.round && m.ready)) {
+      s.remaining = Math.min(s.remaining, 1)
+    }
+  }
 
   // Bot voting during 1v1 duel voting
   if (s.phase === 'VOTING') {

@@ -749,7 +749,7 @@ export class FashionWorld {
 
       // NEUTRALITY RULE:
       // Before duels (LOBBY, THEME_REVEAL, PREPARATION), ALL models are in neutral privacy robe.
-      // All contestants reveal after preparation; only the active pair performs emotes.
+      // Each pair reveals after its intro; future pairs remain neutral backstage.
       // In RESULTS, the podium winners are revealed.
       const shouldRobe = !outfitRevealed(s, c.id)
 
@@ -827,4 +827,3 @@ export class FashionWorld {
     }
   }
 }
-

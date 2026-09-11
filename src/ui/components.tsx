@@ -104,7 +104,7 @@ export function ActionButton(props: {
 
 /** Sleek, minimalist top pill displaying Theme, Phase and Countdown Timer */
 export function HeaderPill(props: { state: State; memberCount: number }) {
-  const { state: s } = props
+  const { state: s, memberCount } = props
   const remainingSec = Math.max(0, Math.ceil(s.remaining))
   const minutes = Math.floor(remainingSec / 60)
     .toString()
@@ -113,7 +113,9 @@ export function HeaderPill(props: { state: State; memberCount: number }) {
   const timer = `${minutes}:${seconds}`
 
   const themeTitle = s.phase === 'LOBBY' ? 'FASHION BATTLE' : THEMES[s.theme].title.toUpperCase()
-  const localizedPhase = localizePhase(s.phase)
+  const localizedPhase = s.phase === 'LOBBY'
+    ? `${memberCount} pessoa${memberCount === 1 ? '' : 's'} online`
+    : localizePhase(s.phase)
   const dressing = s.phase === 'PREPARATION'
   const pillWidth = dressing ? Math.min(330, UI_DIMENSIONS.headerPillWidth * 0.7) : UI_DIMENSIONS.headerPillWidth
   const narrow = dressing || pillWidth < 360
