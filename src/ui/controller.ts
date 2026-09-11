@@ -14,6 +14,7 @@ export class UiController {
   category = 0 // Superior
   lastPhase = ''
   lastRound = -1
+  followShow = true
   wardrobeOpen = false
   locationsOpen = false
   previewAngle = 0

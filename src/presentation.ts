@@ -5,6 +5,7 @@ import { engine, Transform, VirtualCamera, MainCamera } from '@dcl/sdk/ecs'
 /** Transitions never freeze locomotion; failed teleport leaves touch navigation available. */
 export class Presentation {
   private previous = ''
+  private previousPhase = ''
   private dressing = false
   private camera = engine.addEntity()
   private target = engine.addEntity()
@@ -19,7 +20,7 @@ export class Presentation {
     })
   }
 
-  tick(n: FashionNetwork, wardrobeOpen = false) {
+  tick(n: FashionNetwork, wardrobeOpen = false, followShow = true) {
     const s = n.state,
       m = n.mine
     if (!m) return
@@ -36,10 +37,15 @@ export class Presentation {
       }
     }
     if (dressing) return
-    const key = `${s.round}:${s.phase}:${s.duelIndex}`
+    const phaseKey = `${s.round}:${s.phase}:${s.duelIndex}`
+    const phaseChanged = phaseKey !== this.previousPhase
+    this.previousPhase = phaseKey
+    const contestant = s.cast?.some((c) => c.id === m.playerId) ?? false
+    if (phaseChanged && s.phase === 'PREPARATION') n.update({ round: s.round, ready: false, vote: '' })
+    const key = `${phaseKey}:${followShow}`
     if (key === this.previous) return
     this.previous = key
-    const show = ['RUNWAY', 'VOTING', 'DUEL_RESULT', 'RESULTS'].includes(s.phase)
+    const show = followShow && ['RUNWAY', 'VOTING', 'DUEL_RESULT', 'RESULTS'].includes(s.phase)
     if (show) {
       const final = s.phase === 'RESULTS'
       Transform.getMutable(this.camera).position = { x: 12, y: 2.2, z: final ? 6 : 8.5 }
@@ -49,8 +55,10 @@ export class Presentation {
       MainCamera.getMutable(engine.CameraEntity).virtualCameraEntity = undefined
     }
 
+    // Spectators and players exploring freely must not be pulled back on phase changes.
+    if (!followShow || !contestant || !phaseChanged) return
+
     if (s.phase === 'PREPARATION') {
-      n.update({ round: s.round, ready: false, vote: '' })
       // Position player in the lounge near the dressing provadores
       void movePlayerTo({
         newRelativePosition: { x: 5.8, y: 0.35, z: 10.0 },

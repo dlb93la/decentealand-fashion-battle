@@ -178,7 +178,7 @@ test('audio cues fire once per event and ballots from other players remain silen
   assert.equal(ecs.AudioSource.calls.length, 3)
   s.phase = 'RESULTS'
   update(); update()
-  assert.equal(ecs.AudioSource.calls.at(-1), 'assets/Audio/transition.wav')
+  assert.equal(ecs.AudioSource.calls.at(-1), 'assets/Audio/victory.wav')
   assert.equal(ecs.AudioSource.calls.length, 4)
 })
 

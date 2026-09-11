@@ -96,6 +96,13 @@ export function renderUi(n: FashionNetwork, controller: UiController = uiControl
             action={() => { controller.previewAngle = (controller.previewAngle + 45) % 360 }} />
         </UiEntity> : null}
 
+      {['RUNWAY', 'VOTING', 'DUEL_RESULT', 'RESULTS'].includes(s.phase) ? (
+        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 100, right: 12 } }}>
+          <ActionButton value={controller.followShow ? 'Explorar' : 'Ver palco'} width={120} height={44}
+            active={controller.followShow} action={() => { controller.followShow = !controller.followShow }} />
+        </UiEntity>
+      ) : null}
+
       {/* 2. Minimalist Top Right Balance Badge & Quick Menu */}
       {['LOBBY', 'RESULTS', 'RETURN_TO_LOBBY'].includes(s.phase) ? (
         <TopRightBadge stylePoints={stylePoints} activeTab={activeTab} controller={controller} />

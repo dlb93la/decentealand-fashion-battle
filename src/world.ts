@@ -297,6 +297,8 @@ export class FashionWorld {
   voteMarker: Entity
   lastChampion = ''
   private privacyKey = ''
+  private clockText = ''
+  private bannerText = ''
   themeBanner: Entity
   hallSign: Entity
   clockLeft: Entity
@@ -669,7 +671,8 @@ export class FashionWorld {
     const phaseKey = `${s.round}:${s.phase}:${s.duelIndex}`
     if (phaseKey !== this.lastFeedbackPhase) {
       this.lastFeedbackPhase = phaseKey
-      if (s.phase !== 'LOBBY') this.cue('assets/Audio/transition.wav', 3)
+      if (s.phase === 'RESULTS') this.cue('assets/Audio/victory.wav', 0.8)
+      else if (s.phase !== 'LOBBY') this.cue('assets/Audio/transition.wav', 3)
     }
     const voteDuel = s.duels[s.duelIndex]
     const confirmedChoice = s.ballots[myPlayerId]
@@ -710,14 +713,20 @@ export class FashionWorld {
     // Update 3D in-world digital countdown timers
     const remainingSec = Math.max(0, Math.ceil(s.remaining))
     const clockString = `TEMPO: ${remainingSec}s`
-    TextShape.getMutable(this.clockLeft).text = clockString
-    TextShape.getMutable(this.clockRight).text = clockString
+    if (clockString !== this.clockText) {
+      this.clockText = clockString
+      TextShape.getMutable(this.clockLeft).text = clockString
+      TextShape.getMutable(this.clockRight).text = clockString
+    }
 
     this.tickAudio(dt)
 
     // Theme banner text on backstage wall
-    TextShape.getMutable(this.themeBanner).text =
-      s.phase === 'LOBBY' ? 'PREPARE SEU MELHOR LOOK' : THEMES[s.theme].title.toUpperCase()
+    const bannerText = s.phase === 'LOBBY' ? 'PREPARE SEU MELHOR LOOK' : THEMES[s.theme].title.toUpperCase()
+    if (bannerText !== this.bannerText) {
+      this.bannerText = bannerText
+      TextShape.getMutable(this.themeBanner).text = bannerText
+    }
 
     const duel = s.duels && s.duels[s.duelIndex]
     const isDuelActive = (s.phase === 'RUNWAY' || s.phase === 'VOTING' || s.phase === 'DUEL_RESULT') && !!duel

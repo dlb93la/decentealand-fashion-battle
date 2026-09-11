@@ -21,6 +21,14 @@ test('runway camera frames the stage and releases normal camera outside competit
     assert.ok(ecs.Transform.getMutable(camera).position.z > 5.5)
     assert.equal(ecs.VirtualCamera.getMutable(camera).fov, 48)
   }
+  n.state.phase = 'RUNWAY'
+  p.tick(n, false, false)
+  assert.equal(ecs.MainCamera.getMutable(2).virtualCameraEntity, undefined)
+  n.state.phase = 'VOTING'
+  p.tick(n, false, false)
+  assert.equal(ecs.MainCamera.getMutable(2).virtualCameraEntity, undefined)
+  p.tick(n, false, true)
+  assert.ok(ecs.MainCamera.getMutable(2).virtualCameraEntity)
   for (const phase of ['RETURN_TO_LOBBY', 'LOBBY', 'PREPARATION']) {
     n.state.phase = phase
     p.tick(n)
