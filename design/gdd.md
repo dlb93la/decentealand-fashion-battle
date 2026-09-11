@@ -1,122 +1,300 @@
-# Fit Check — Decentraland Fashion Battle — Game Design Document
+# Fit Check — Decentraland Fashion Battle
+## Game Design Document
 
-Version 1.2 — submission scope, September 11, 2026. Platform: Decentraland SDK7, with mobile as the target experience.
+**Version 1.3 — Final Friendzone submission scope — September 11, 2026**  
+**Platform:** Decentraland SDK7  
+**Target experience:** Mobile-first social play
 
-This English edition supersedes the original Portuguese 1.0 draft for this delivery. The original remains in [GDD-TECNICO.md](../GDD-TECNICO.md) for traceability. This is an explicit scope revision, not a claim that every feature in the original draft has been implemented. See [implementation-status.md](implementation-status.md) for evidence and remaining gaps.
+This English edition is the current submission design reference. The original Portuguese draft remains in [`GDD-TECNICO.md`](../GDD-TECNICO.md) for traceability. Historical audit documents may describe earlier timings or validation states; this document defines the final intended and implemented submission scope.
 
-## Product concept
+---
 
-Dress for an unexpected theme, perform in a one-on-one runway duel, vote on other contestants, earn Style Points, and play another round. The scene is a continuous social space: visitors may arrive mid-round, walk around, watch, and leave without ending the world.
+## 1. Product concept
 
-The intended appeal is interpreting playful prompts and seeing how other people interpret them. Bots fill empty contestant slots so one visitor can complete the loop. Bots support availability; they do not replace evidence of enjoyable human interaction.
+**Dress. Pose. Vote. Win. Repeat.**
 
-## Core loop and timing
+Fit Check turns virtual fashion into a multiplayer social game.
 
-Lobby → theme reveal → preparation → three runway duels and votes → final results → lobby.
+Players receive a shared surprise theme, create a look, perform in a one-on-one runway duel, vote on other contestants, earn session-scoped Style Points and continue into another round.
+
+The core idea is intentionally social:
+
+> **The social layer is the scoring system.**
+
+Fashion is subjective. Instead of asking an algorithm to determine the "best" outfit, Fit Check makes human judgment the mechanic. Contestants create the content, contestants perform it, and the audience determines the outcome.
+
+The scene remains a continuous social space: visitors may arrive mid-round, walk around, watch, vote when eligible and remain for the next round without restarting the application.
+
+Bots fill empty contestant slots so one human visitor can experience the full loop. Bots support availability; they are not a substitute for human social interaction.
+
+---
+
+## 2. Core loop and timing
+
+**LOBBY → THEME → PREPARATION → 3× (INTRO → POSE → VOTE → DUEL RESULT) → RESULTS → RETURN**
 
 | Stage | Duration | Player experience |
 |---|---:|---|
-| Lobby | 10 s | Explore and wait for the next selection. A round requires human presence. |
-| Theme reveal | 4 s | Read the theme and its description. |
-| Preparation | 40 s | Open DRESS, choose clothing, SAVE the preferred look, and mark READY. |
-| Duel intro | 2 s per duel | Both contestants wear neutral outfits during the countdown. |
-| Runway poses | 10 s per duel | Only the active pair reveals and performs; backstage stays neutral. |
-| Voting | Up to 5 s per duel | Eligible audience members vote A or B. All required votes can end this phase early. |
-| Duel result | 3 s per duel | Display the winner and vote totals. |
-| Final results | 6 s | Show Top 3 and the local player's earned Style Points. |
-| Return | 3 s | Continue automatically to the next lobby. |
+| Lobby | 10s | Explore and wait for the next selection. A round requires human presence. |
+| Theme Reveal | 4s | Read the shared theme and description. |
+| Preparation | 40s | Open DRESS, choose clothing, SAVE a preferred look and optionally mark READY. |
+| Duel Intro | 2s / duel | The active pair enters while still visually neutral. |
+| Runway Pose | 10s / duel | The active pair reveals and performs. Backstage remains neutral. |
+| Voting | Up to 5s / duel | Eligible audience members vote A or B; the phase may end early when required votes are complete. |
+| Duel Result | 3s / duel | Winner and vote totals are displayed. |
+| Final Results | 6s | Top 3 and the local player's earned Style Points are shown. |
+| Return | 3s | The experience automatically continues into the next lobby. |
 
-Maximum nominal cycle: 123 seconds (three duels), reduced from 244 seconds. READY does not shorten preparation. The wardrobe closes at the last second; the last accepted look remains locked for the round. The Game Design skill's below-60-second recommendation remains unmet for a complete six-contestant round. Each individual duel takes at most 20 seconds.
+**Maximum nominal three-duel cycle: 123 seconds.**
 
-## Participants and social interaction
+READY confirms readiness but does not shorten the preparation timer. The wardrobe closes at the deadline and the last accepted look remains locked for the round.
 
-A round has six contestants arranged into three distinct pairs. Each contestant competes once per round. Humans fill available slots and bots fill the remainder; excess humans rotate into subsequent rounds. Late arrivals can watch and vote when eligible without changing the current cast.
+Each individual duel sequence takes at most 20 seconds.
 
-Each eligible audience member has one vote per duel. Active duelists cannot vote in their own duel. Self-votes, duplicate votes, stale requests and invalid candidates are rejected by the coordinating client's game rules. A pending and confirmed vote state provides feedback. Bots use theme tags, style preferences and bounded variation.
+---
 
-Presence expiry handles missing heartbeats, not inactivity: standing still does not count as AFK. No player is expelled from the scene. A disconnected contestant may remain represented by its NPC until the round ends.
+## 3. Participants and social interaction
 
-## Wardrobe and saved looks
+A round has six contestant slots arranged into three distinct 1v1 pairs.
 
-The shared free catalog contains 200 wearable URNs with bundled thumbnails. The outfit is applied to scene-owned models, not a purchase or permanent change to the visitor's wallet avatar.
+Humans fill available slots and bots fill the remainder. Excess humans rotate into later rounds. Late arrivals can observe the active round and vote when eligible without replacing the current cast.
 
-Navigation uses Upper (shirts, sweaters, tops, jackets), Lower (pants, skirts, shorts), Full body (dresses, jumpsuits), Feet (sandals, heels, sneakers, boots, shoes), Hair, Accessories, Appearance and Effects. Types are inferred from catalog names. Full-body items reuse the catalog's existing upper-body slot; these are not newly authored assets.
+Each eligible audience member has one vote per duel.
 
-DRESS opens the fitting view. SAVE stores an independent local snapshot and closes it. On the first opening in each later round, the saved snapshot is restored automatically. Reopening in the same round preserves edits. FREE CAMERA closes the fitting view without saving or discarding the currently equipped edits; DRESS returns to it. There is one preset, in memory for the current client session only. Reloading or changing machines does not transfer it.
+The active duelists cannot vote in their own duel. Self-votes, duplicate ballots, stale requests and invalid candidates are rejected by the coordinating client's game rules. Pending and confirmed vote states provide feedback.
 
-The old Backpack/Back selector and location shortcut menu are outside this revised delivery scope. The corresponding legacy data may remain for compatibility.
+Bots can fill, dress, pose and vote using theme tags, style preferences and bounded variation.
 
-## Reveal and camera freedom
+Presence expiry handles missing heartbeats rather than inactivity: standing still does not count as AFK, and the scene does not eject idle visitors.
 
-Theme reveal and preparation keep contestant models neutral. During each runway intro, the active pair is still neutral. After the two-second countdown, only that pair reveals. Inactive contestants remain neutral during runway, voting and duel results. Final results reveal the cast.
+---
 
-This is visual concealment on scene models, not cryptographic secrecy. Outfit data is synchronized to clients, and visitors' own Explorer avatars outside the privacy volume are not hidden by a global rule. Remote wearable loading can affect the visible reveal timing.
+## 4. Wardrobe and saved look
 
-The default view is the Explorer's normal player camera. WATCH STAGE opts into framing during runway, voting, duel results and final results. FREE CAMERA immediately requests release of the scene camera and restores ordinary exploration. The choice persists across phase changes locally; phase changes never teleport the visitor. Opening DRESS explicitly selects fitting-room framing; FREE CAMERA exits it. Camera selection does not affect voting eligibility, scoring or round membership, and is not a spectator-only participation opt-out.
+The shared free catalog contains **200 unique wearable URNs** with bundled thumbnails.
 
-The scene does not disable locomotion. Camera changes target scene-owned virtual cameras without moving the player's avatar.
+The wardrobe applies items to scene-controlled fashion models. It does not grant wearable ownership and does not permanently modify a visitor's wallet avatar.
 
-## Rewards and reasons to repeat
+Navigation includes:
 
-Participation awards 10 SP, each duel win awards 50 SP, and the overall champion receives an additional 100 SP. Results show names, votes and duel wins for the Top 3, plus the local player's earned points. A tie is resolved by the deterministic ranking rules in the model.
+- Upper
+- Lower
+- Full body
+- Feet
+- Hair
+- Accessories
+- Appearance
+- Effects
 
-Clothing remains free. Session SP can buy Superstar Pose (250), Royal Pose (400), Sparkles Effect (500) and Fashion Icon title (1,000). Purchases do not grant voting strength. Pose labels map to built-in Decentraland emotes; they are not custom animations.
+DRESS opens the fitting view. SAVE stores one independent local snapshot and closes the wardrobe.
 
-The Hall stores up to 20 session wins and displays the latest champion. Today/week/session rankings are computed only from session accounts. The retention promise is another round during the current session. Persistent balances, unlocks, saved presets, global rankings and history across visits are roadmap features.
+On the first DRESS opening in each later round, the saved snapshot is automatically restored. Reopening DRESS within the same round preserves current edits.
 
-## MVP Scope
+FREE CAMERA exits fitting mode without saving or discarding the currently equipped edits.
 
-| Required system | Delivery definition |
+The preset exists **in memory for the current client session only**. Reloading or changing devices does not transfer it.
+
+---
+
+## 5. Reveal and camera freedom
+
+Theme reveal and preparation keep contestant scene models visually neutral.
+
+During each two-second runway intro, the active pair is also still neutral. When pose time begins, only that pair reveals its submitted looks and starts performing. Inactive contestants remain neutral through runway, voting and duel-result phases.
+
+Final results reveal the cast.
+
+This is visual concealment on scene-controlled models, not cryptographic secrecy.
+
+The default view remains the Explorer's normal player camera.
+
+- **WATCH STAGE** opts into stage framing.
+- **FREE CAMERA** releases the scene camera and restores ordinary exploration.
+- **DRESS** explicitly enters fitting-room framing.
+
+Phase changes do not teleport visitors and do not disable locomotion. Camera choice does not affect scoring, voting eligibility or round membership.
+
+---
+
+## 6. Voting and scoring
+
+Voting turns spectatorship into gameplay.
+
+Eligible visitors choose contestant A or B during each duel. The coordinating game model validates ballots and settles the duel.
+
+Current Style Point rules:
+
+- **+10 SP** participation
+- **+50 SP** duel win
+- **+100 SP** overall champion bonus
+
+Ties are resolved by deterministic model rules.
+
+Style Points are a **session-scoped prototype reward system**, not a durable wallet balance or on-chain currency.
+
+---
+
+## 7. Rewards and repeat play
+
+Session Style Points can be used for the implemented prototype cosmetic rewards:
+
+- Superstar Pose — 250 SP
+- Royal Pose — 400 SP
+- Sparkles Effect — 500 SP
+- Fashion Icon title — 1,000 SP
+
+These purchases do not grant extra voting power.
+
+The current Hall/champion presentation is a session prototype rather than a persistent historical gallery. Rankings and results do not claim durable cross-visit storage.
+
+The primary retention loop is social variation:
+
+**new theme + new outfit + new opponent + new audience = a different round.**
+
+Persistent progression, global rankings, permanent Hall history and durable unlocks remain future work.
+
+---
+
+## 8. Mobile-first design
+
+The core loop is intentionally visual and button-driven.
+
+Mobile-oriented decisions include:
+
+- large explicit DRESS / READY controls
+- touch-oriented wardrobe categories and pagination
+- direct A/B voting
+- clear phase timers
+- automatic round progression
+- optional stage framing rather than forced camera control
+- core gameplay that does not require text chat
+- safe-area-aware UI positioning
+- a low-population loop that works with one human visitor plus bots
+
+The project owner completed a **physical Android playtest** of the submission build.
+
+Browser-responsive testing and physical-device testing are treated as separate environments. iOS physical-device validation is not claimed.
+
+---
+
+## 9. Architecture and trust model
+
+Fit Check is built with Decentraland SDK7, TypeScript, ECS and React-ECS UI.
+
+Key responsibilities:
+
+| Path | Responsibility |
 |---|---|
-| Lobby | A live entry space and automatically repeating round lobby. |
-| Theme system | Shared theme title and description before preparation. |
-| Six-contestant structure | Six contestants, bot filling and three unique 1v1 pairs. |
-| Wardrobe | Free catalog, grouped navigation, outfit editing and one automatically restored session preset. |
-| Outfit privacy and reveal | Neutral shared models until the active pair's intro ends. |
-| Runway | Active pair on stage, built-in pose selection and opt-in framing. |
-| Voting | One eligible vote per duel, validation and confirmation feedback. |
-| Bots | Fill, dress, pose and vote without blocking the loop. |
-| Results | Top 3, duel totals and local earned SP. |
-| Style Points | Session rewards, balances and cosmetic purchases. |
-| Repeat loop | Automatic next round without restarting the application. |
-| Camera freedom | Enter/exit fitting and stage views; no automatic player relocation. |
-| Mobile UI | Touch controls, safe-area layout and readable access to the core loop; physical-device validation remains outstanding. |
+| `src/model.ts` | Match phases, pairs, votes, scoring, bots and session rewards |
+| `src/network.ts` | CRDT presence, intentions, elected coordinator and shared snapshots |
+| `src/data.ts`, `src/catalog.ts` | Timing, themes, inventory and catalog data |
+| `src/wardrobe.ts` | Wardrobe grouping/navigation |
+| `src/world.ts` | Arena, scene-controlled figures and presentation entities |
+| `src/avatar-factory.ts` | Outfit/avatar representation |
+| `src/presentation.ts` | Optional virtual camera selection/release |
+| `src/ui/` | Touch UI, wardrobe, voting, results, shop and ranking views |
+| `src/rankings.ts` | Session statistics |
+| `tests/` | Automated model/network/wardrobe/avatar/camera/world regressions |
 
-## Architecture and trust model
+The shared match uses a **client-elected coordinator**, not a trusted authoritative backend.
 
-SDK7 TypeScript creates the scene with ECS entities and React-ECS UI. A pure state model controls phases, votes and rewards. CRDT Presence components carry intentions and heartbeats; an elected client advances and publishes the shared Session. The coordinator is not a trusted backend. This delivery does not claim server-authoritative anti-cheat, durable storage, an on-chain economy or progress while no clients remain.
+The prototype does not claim:
 
-The arena uses six parcels in a 3×2 layout. Assets include local thumbnails and original audio; wearables resolve remotely. The configured deployment target is the World `leined.eth`. Publishing requires the authorized owner's signature; pushing the repository does not deploy the World.
+- server-authoritative anti-cheat
+- durable database persistence
+- an on-chain game economy
+- permanent progress while no clients remain
 
-## Presentation and audio
+---
 
-The delivery arena uses a warm peach/coral/cream palette with mint and gold accents, potted palms, lounge seating, visible reflector fixtures and live phase/timer displays on the side walls. A contrasting central sign and an A/B interface panel keep theme and contestant identities readable. TVs are scene-native information displays, not video streams.
+## 10. World and deployment
 
-English scene controls, theme descriptions and delivery documentation. A 40-second local instrumental loop accompanies gameplay. A three-second chime signals phase changes and a short sound acknowledges voting. Background audio ducks for effects and returns afterward. Distinct victory audio and sound feedback for every clothing/save action are not part of the implemented polish.
+The arena uses six parcels in a 3×2 layout.
 
-## Explicit revisions from version 1.0
+The configured and deployed World identity is:
 
-- Preparation is 90 seconds, not the suggested 60; duration tuning is deferred.
-- Eight actual phases replace the ten proposed labels; intro and pose are timed portions of RUNWAY.
-- Each contestant plays one duel per round, not several.
-- Scene models display outfits; wallet inventory/economy is not a delivery requirement.
-- One automatically restored local session preset replaces a separate restore menu.
-- Back selection is removed from the delivery UI.
-- Camera framing is optional and does not teleport visitors.
-- Top 3 shows vote/duel totals; SP gain is local, rather than shown for every finalist.
-- Client coordination replaces the proposed trusted server for this prototype. Trust limitations remain explicit.
-- Retention, ranks, Hall and cosmetics are session-only. Persistent and global systems remain roadmap.
-- Royal is a pose purchase, not a special entrance. Additional example effects are roadmap.
+`leined.eth`
 
-## Roadmap and evaluation gaps
+A direct public web launch is available at:
 
-Persistent progress and unlocks; trusted authoritative service; global rankings and historical Hall; special entrances and additional effects; expanded bot outfit coverage; measured asset loading and runtime budgets; mobile readability and performance; multi-device reconnection and five-human sessions; unsolicited reviewer playtests; measured return rates.
+`https://decentraland.org/bevy-web/?realm=https%3A%2F%2Fworlds-content-server.decentraland.org%2Fworld%2Fleined.eth&position=0%2C0`
 
-These are not completed features or guarantees of program acceptance. Current delivery evidence and its capture limitations are tracked separately in the implementation report.
+The external ENS uses a `dcl.realm` record for bare-name realm resolution. Resolver/cache propagation can be separate from the existence of the deployment itself.
 
-## Running the prototype
+GitHub publication and Decentraland World publication are separate operations.
 
-```sh
+---
+
+## 11. Presentation and audio
+
+The arena uses a warm peach/coral/cream fashion-lounge palette with mint and gold accents.
+
+Live displays communicate theme, phase and timing. The central runway uses clear A/B contestant presentation and a dedicated audience voting interface.
+
+A local instrumental loop accompanies gameplay, with transition/vote feedback and audio ducking.
+
+Players can select local Day or Night presentation without changing shared match rules.
+
+---
+
+## 12. Final MVP scope
+
+| System | Final submission scope |
+|---|---|
+| Lobby | Continuous entry space and repeating rounds |
+| Theme | Shared prompt before preparation |
+| Contestants | Six slots, bot filling and three unique 1v1 duels |
+| Wardrobe | 200-URN free scene wardrobe with one session preset |
+| Reveal | Neutral models until each active pair's intro ends |
+| Runway | Active pair reveal and built-in pose/emote presentation |
+| Voting | One eligible vote per duel with validation and feedback |
+| Bots | Fill, dress, pose and vote |
+| Results | Duel results, Top 3 and local SP |
+| Rewards | Session SP and prototype cosmetic purchases |
+| Repeat loop | Automatic next round |
+| Cameras | Optional fitting/stage views with free exploration |
+| Mobile | Touch-oriented UI; physical Android playtest completed |
+| Hall/history | Session/prototype presentation only; durable history deferred |
+
+---
+
+## 13. Final validation snapshot
+
+A final read-only audit of commit `8b22009f32803e58967a1169c64d47b473960480` reported:
+
+- **61 planned tests, 61 passed, 0 failed, 0 skipped**
+- build completed successfully
+- TypeScript checking completed without errors
+- local preview health passed
+- a complete local browser round was observed through all three duels and the next lobby
+- wardrobe, SAVE, READY, reveal, voting, results, saved-look restoration, stage/free camera and Day/Night behavior were observed
+- the audit made no tracked project changes
+
+The automated audit itself did not claim independent physical-device or cryptographically independent multi-client validation. Physical Android testing was performed separately by the project owner.
+
+---
+
+## 14. Known boundaries / future work
+
+Future work includes:
+
+- durable progress and unlocks
+- trusted authoritative services where appropriate
+- persistent global rankings and historical Hall
+- expanded effects and presentation
+- wider bot outfit coverage
+- measured runtime/mobile performance budgets
+- physical iOS validation
+- broader independent multi-human/multi-device testing
+- measured player retention
+
+These are roadmap items, not claims about the submitted prototype.
+
+---
+
+## 15. Run locally
+
+```bash
 git clone --branch codex/hackathon-mvp https://github.com/dlb93la/fit-check-fashion-battle.git
 cd fit-check-fashion-battle
 npm ci
@@ -125,11 +303,22 @@ npm run build
 npm start
 ```
 
-Use Node.js 22 LTS and internet access for dependencies and wearable assets. `npm start` serves port 8010 and opens Bevy Web. For mobile preview use `npm run start:mobile` and the CLI QR on the same LAN; if it selects a VPN address, substitute the computer's LAN IP. The server health route is `/about`; `/` is not the playable application.
+Requirements: Git, Node.js 22 LTS, npm and internet access for dependencies and wearable assets.
 
+For mobile preview:
 
-## Delivery scope update — Hall of Fame (September 11, 2026)
+```bash
+npm run start:mobile
+```
 
-The complete Hall of Fame is deferred until after the MVP delivery. Its entrance is marked **Work in Progress**. The current room and session champion display are a visual prototype, not a persistent historical gallery. Future work includes durable winner records, curated historical outfits, browsing previous champions and a production persistence service. Do not count this prototype as completed long-term retention.
+The local preview server runs on port `8010`.
 
-Players can select local Day or Night lighting without changing scene objects or affecting other players. The informational overlay is temporarily hidden for playtesting; world screens show phase and time. Watch Stage / Free Camera remains opt-in at the bottom center, separate from voting and outfit controls. Neutral contestants use varied body shapes and hairstyles unrelated to their hidden outfits. Bot judges vote after a short staggered delay; score ties no longer always favor slot A.
+---
+
+## 16. Submission principle
+
+Fit Check is not trying to make fashion objective.
+
+It makes fashion's subjectivity the reason people need each other.
+
+> **There is no runway without an audience — and in Fit Check, the audience plays too.**
