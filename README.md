@@ -15,7 +15,7 @@ npm run build
 npm start
 ```
 
-Port: 8010. Only Fashion Battle is included here. The older scene remains in the original workspace and is not a dependency.
+Port: 8010. Only Fashion Battle is included here. No parent-project files are required.
 
 The default branch is `codex/hackathon-mvp`; cloning checks it out automatically. To continue development on another machine, run `git pull --ff-only` before editing and commit/push your changes when finished. Run `npm ci` again when the lockfile changes. Avoid editing the same files simultaneously on two machines without first synchronizing commits.
 
@@ -41,10 +41,12 @@ Do not use localhost or 127.0.0.1 on the phone. Keep the preview running. To dia
 
 1. Join the lobby; rounds start automatically. Bots fill empty places up to six contestants.
 2. Read the theme and dress your show avatar during the 90-second preparation.
-3. Tap VESTIR for the fitting view. Browse clothing groups, garment types, larger thumbnails and explicit pages in the left panel. GIRAR LOOK rotates the preview. Main wardrobe items are free.
-4. Tap READY or let the timer finish. Shared models stay neutral during preparation and reveal when the runway starts.
+3. Tap DRESS for the fitting view. Browse clothing groups, garment types, larger thumbnails and explicit pages in the left panel. ROTATE LOOK rotates the preview. Main wardrobe items are free.
+4. Tap READY or let the timer finish. Shared models stay neutral during preparation and the three-second duel intro. Only the active pair reveals afterward; backstage stays neutral.
 5. Each pair has 20 seconds to pose while rotating, then up to 10 seconds of voting. Voting ends early when everyone eligible votes. Duelists cannot vote in their own duel.
-6. View results, Style Points and the champion in the Hall of Fame. The next round starts automatically.
+6. Use WATCH STAGE for optional framing and FREE CAMERA to return to exploration. Opening DRESS also offers FREE CAMERA to exit. Phase changes never teleport you.
+7. SAVE stores one local session look; first DRESS opening each round restores it automatically. Reopening in the same round preserves edits.
+8. View results, Style Points and the champion in the Hall of Fame. The next round starts automatically.
 
 ## Catalog
 
@@ -62,6 +64,8 @@ Do not use localhost or 127.0.0.1 on the phone. Keep the preview running. To dia
 The local wardrobe dresses NPC avatars; it does not grant wearable ownership. Native Backpack integration cannot forcibly save unconfirmed drafts or close the native interface. The scene-owned wardrobe handles its own timer.
 
 ## Delivery status
+
+Read the [English GDD](design/gdd.md), [implementation report](design/implementation-status.md) and [final validation/evidence](design/delivery-validation.md). These distinguish session-only functionality from roadmap and historical captures.
 
 The loop, bots, wardrobe, pair voting, session points, cosmetic shop and Hall of Fame are implemented. The coordinator is an elected client, not a trusted backend. Points and history persist only for the shared session.
 

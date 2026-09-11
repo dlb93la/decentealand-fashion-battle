@@ -10,20 +10,34 @@ test('runway camera frames the stage and releases normal camera outside competit
   let entity = 10
   const ecs = { engine: { CameraEntity: 2, addEntity: () => ++entity }, Transform: component(),
     VirtualCamera: { ...component(), Transition: { Time: value => value } }, MainCamera: component() }
-  const { Presentation } = loader({ '@dcl/sdk/ecs': ecs })(__dirname + '/../src/presentation.ts')
+  const { Presentation } = loader({ '@dcl/sdk/ecs': ecs, '~system/RestrictedActions': { movePlayerTo: () => { assert.fail('Camera must not teleport players') } } })(__dirname + '/../src/presentation.ts')
   const p = new Presentation()
   const n = { mine: {}, state: { round: 1, phase: 'RUNWAY', duelIndex: 0 }, update() {} }
   for (const phase of ['RUNWAY', 'VOTING', 'DUEL_RESULT', 'RESULTS']) {
     n.state.phase = phase
-    p.tick(n)
+    p.tick(n, false, true)
     const camera = ecs.MainCamera.getMutable(2).virtualCameraEntity
     assert.ok(camera)
     assert.ok(ecs.Transform.getMutable(camera).position.z > 5.5)
     assert.equal(ecs.VirtualCamera.getMutable(camera).fov, 48)
   }
-  for (const phase of ['RETURN_TO_LOBBY', 'LOBBY', 'PREPARATION']) {
+  p.tick(n, false, false)
+  assert.equal(ecs.MainCamera.getMutable(2).virtualCameraEntity, undefined)
+  p.tick(n, false, true)
+  assert.ok(ecs.MainCamera.getMutable(2).virtualCameraEntity)
+  n.state.phase = 'PREPARATION'; n.state.remaining = 30
+  p.tick(n, true, false)
+  assert.ok(ecs.MainCamera.getMutable(2).virtualCameraEntity)
+  p.tick(n, false, false)
+  assert.equal(ecs.MainCamera.getMutable(2).virtualCameraEntity, undefined)
+  for (const phase of ['RUNWAY', 'VOTING', 'RESULTS']) {
     n.state.phase = phase
     p.tick(n)
+    assert.equal(ecs.MainCamera.getMutable(2).virtualCameraEntity, undefined)
+  }
+  for (const phase of ['RETURN_TO_LOBBY', 'LOBBY', 'PREPARATION']) {
+    n.state.phase = phase
+    p.tick(n, false, true)
     assert.equal(ecs.MainCamera.getMutable(2).virtualCameraEntity, undefined)
   }
 })

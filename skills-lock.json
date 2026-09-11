@@ -98,10 +98,10 @@
       "computedHash": "ac3b424f981ef92ba64931f789e0581d881e9b27c2ae390b79f39b2977c09384"
     },
     "game-design": {
-      "source": "decentraland/sdk-skills",
+      "source": "dcl-regenesislabs/opendcl",
       "sourceType": "github",
-      "skillPath": "game-design/SKILL.md",
-      "computedHash": "12956c1945fd2b9d88278a9f1db0f2d04d12b5ed66fc38caa150cca9b9a8cb8b"
+      "skillPath": "skills/game-design/SKILL.md",
+      "computedHash": "e5271d9749855e8790ad243d580947bfac4184872b01174cbaef28f8c76abe38"
     },
     "lighting-environment": {
       "source": "decentraland/sdk-skills",

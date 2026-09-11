@@ -19,7 +19,7 @@ export function ShopView(props: { state: State; network: FashionNetwork; mine?: 
       <UiEntity uiTransform={{ width: '100%', height: 230, flexDirection: 'column' }}>
         {SHOP.map((item) => {
           const isOwned = owned.includes(item.id)
-          const label = isOwned ? `ADQUIRIDO  •  ${item.name}` : `${item.price} SP  •  ${item.name}`
+          const label = isOwned ? `OWNED  •  ${item.name}` : `${item.price} SP  •  ${item.name}`
 
           return (
             <ActionButton
@@ -27,15 +27,15 @@ export function ShopView(props: { state: State; network: FashionNetwork; mine?: 
               value={label}
               action={() => {
                 if (isOwned) {
-                  ctrl.setMessage('Item já adquirido nesta sessão')
+                  ctrl.setMessage('Already owned this session')
                   return
                 }
                 if (points < item.price) {
-                  ctrl.setMessage(`Pontos insuficientes (necessário ${item.price} SP)`)
+                  ctrl.setMessage(`Not enough points (requires ${item.price} SP)`)
                   return
                 }
                 n.update({ purchase: item.id })
-                ctrl.setMessage(`Compra de "${item.name}" enviada!`)
+                ctrl.setMessage(`Purchase request for "${item.name}" sent!`)
               }}
               width="94%"
               height={48}
@@ -47,7 +47,7 @@ export function ShopView(props: { state: State; network: FashionNetwork; mine?: 
       </UiEntity>
 
       <TextLabel
-        value={ctrl.message || 'Roupas gratuitas em ROUPAS'}
+        value={ctrl.message || 'Free clothing in DRESS during preparation'}
         height={44}
         fontSize={13}
         color={THEME_COLORS.mint}

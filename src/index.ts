@@ -23,7 +23,7 @@ export function main() {
     network.tick(dt)
     audit.observe(network.state, network.mine?.playerId)
     uiController.tick(network)
-    presentation.tick(network, uiController.wardrobeOpen)
+    presentation.tick(network, uiController.wardrobeOpen, uiController.watchStage)
 
     world.update(
       network.state,

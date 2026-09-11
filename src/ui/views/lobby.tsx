@@ -25,7 +25,7 @@ export function LobbyView(props: { state: State; isConnecting: boolean }) {
         uiBackground={{ color: THEME_COLORS.glassBg }}
       >
         <Label
-          value="Conectando ao show..."
+          value="Connecting to the show..."
           fontSize={15}
           color={THEME_COLORS.cream}
           textAlign="middle-center"
@@ -39,7 +39,7 @@ export function LobbyView(props: { state: State; isConnecting: boolean }) {
     s.phase === 'THEME_REVEAL'
       ? THEMES[s.theme].description
       : s.phase === 'RETURN_TO_LOBBY'
-        ? 'Próxima rodada em instantes'
+        ? 'Next round starting soon'
         : 'Dress. Pose. Vote.'
 
   return (

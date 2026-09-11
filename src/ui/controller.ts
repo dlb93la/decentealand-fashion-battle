@@ -11,7 +11,7 @@ export class UiController {
   tab: UiTab = 'game'
   rankingPeriod: import('../rankings').RankingPeriod = 'all'
   message = ''
-  category = 0 // Superior
+  category = 0 // Upper
   lastPhase = ''
   lastRound = -1
   wardrobeOpen = false
@@ -21,11 +21,28 @@ export class UiController {
   wardrobeFilter = ''
   lockedRound = -1
   savedLook?: Outfit
+  watchStage = false
+  private openedRound = -1
+
+  openWardrobe(n: FashionNetwork) {
+    if (n.state.phase !== 'PREPARATION' || n.state.remaining <= 1 ||
+        !n.mine || !n.state.cast.some(c => c.id === n.mine?.playerId)) return
+    if (this.openedRound !== n.state.round) {
+      this.restoreLook(n)
+      this.openedRound = n.state.round
+    }
+    this.wardrobeOpen = true
+  }
+
+  freeCamera() {
+    this.watchStage = false
+    this.wardrobeOpen = false
+  }
 
   saveLook(outfit: Outfit) {
     this.savedLook = copyLook(outfit)
     this.wardrobeOpen = false
-    this.message = 'Look salvo'
+    this.message = 'Look saved for your next round'
   }
 
   restoreLook(n: FashionNetwork) {
@@ -33,10 +50,10 @@ export class UiController {
     // A restored native snapshot must not be overwritten by live Backpack polling.
     n.nativeWardrobe = false
     n.update({ outfit: copyLook(this.savedLook), round: n.state.round, ready: false })
-    this.message = 'Look restaurado'
+    this.message = 'Saved look restored'
   }
 
-  /** System-driven update: resets transient phase state without triggering network actions or UI renders. */
+  /** System-driven update: resets transient UI state and publishes preparation readiness once per phase. */
   tick(n: FashionNetwork) {
     const s = n.state
     if (this.lastPhase !== s.phase || this.lastRound !== s.round) {
@@ -46,6 +63,7 @@ export class UiController {
       this.tab = 'game'
       this.wardrobeOpen = false
       this.locationsOpen = false
+      if (s.phase === 'PREPARATION' && n.mine) n.update({ round: s.round, ready: false, vote: '' })
     }
     if (s.phase === 'PREPARATION' && s.remaining <= 1 && this.lockedRound !== s.round) {
       this.lockedRound = s.round
@@ -73,13 +91,13 @@ export class UiController {
   setPose(i: number, n: FashionNetwork) {
     if (!Number.isInteger(i) || i < 0 || i >= POSE_TO_EMOTE.length) return
     n.update({ pose: i, round: n.state.round })
-    this.message = 'Pose ativada!'
+    this.message = 'Pose activated!'
     const emoteName = POSE_TO_EMOTE[i]
     void triggerEmote({
       predefinedEmote: emoteName
     }).catch((err) => {
       console.error('[FashionBattle] triggerEmote failed:', err)
-      this.message = 'Pose aplicada ao modelo do palco'
+      this.message = 'Pose applied to the stage model'
     })
   }
 
@@ -94,7 +112,7 @@ export class UiController {
       cameraTarget
     }).catch((err) => {
       console.error(`[FashionBattle] movePlayerTo (${label}) failed:`, err)
-      this.message = 'Câmera/teleporte indisponível'
+      this.message = 'Camera/teleport unavailable'
     })
   }
 }

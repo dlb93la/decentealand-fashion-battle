@@ -436,9 +436,9 @@ export class FashionWorld {
     barrier(3.5, 0.24, 13.6, 3.2, 1.5, 0.06, NEON_MINT)
     barrier(3.5, 0.24, 10.4, 3.2, 1.5, 0.06, NEON_MINT)
 
-    label('MEU LOOK', 3.5, 2.6, 12.0, 0.9, NEON_MINT)
-    this.clockLeft = label('TEMPO: --', 3.5, 3.4, 12.0, 1.2, NEON_GOLD)
-    this.previewLeft = new AvatarFigure('preview-left', 'MEU LOOK', 3.5, 0.33, 12.0, 135, 1.0, false)
+    label('MY LOOK', 3.5, 2.6, 12.0, 0.9, NEON_MINT)
+    this.clockLeft = label('TIME: --', 3.5, 3.4, 12.0, 1.2, NEON_GOLD)
+    this.previewLeft = new AvatarFigure('preview-left', 'MY LOOK', 3.5, 0.33, 12.0, 135, 1.0, false)
 
     // --- PROVADOR LESTE (Right / East Wall of Main Hall: X=20.5, Z=12.0) ---
     box(20.5, 0.18, 12.0, 3.2, 0.24, 3.2, CLUB_FLOOR, undefined, true)
@@ -448,9 +448,9 @@ export class FashionWorld {
     barrier(20.5, 0.24, 13.6, 3.2, 1.5, 0.06, NEON_MINT)
     barrier(20.5, 0.24, 10.4, 3.2, 1.5, 0.06, NEON_MINT)
 
-    label('MEU LOOK', 20.5, 2.6, 12.0, 0.9, NEON_MINT)
-    this.clockRight = label('TEMPO: --', 20.5, 3.4, 12.0, 1.2, NEON_GOLD)
-    this.previewRight = new AvatarFigure('preview-right', 'MEU LOOK', 20.5, 0.33, 12.0, 225, 1.0, false)
+    label('MY LOOK', 20.5, 2.6, 12.0, 0.9, NEON_MINT)
+    this.clockRight = label('TIME: --', 20.5, 3.4, 12.0, 1.2, NEON_GOLD)
+    this.previewRight = new AvatarFigure('preview-right', 'MY LOOK', 20.5, 0.33, 12.0, 225, 1.0, false)
 
     // ==========================================
     // 7. ISOLATED VIP HALL OF FAME ROOM (X=38.0, Z=18.0)
@@ -464,7 +464,7 @@ export class FashionWorld {
     barrier(38.0, 0.55, 16.2, 3.4, 1.4, 0.06, NEON_GOLD)
 
     this.champion = new AvatarFigure('champion-hof', 'CAMPEÃO', 38.0, 0.66, 18.0, 225, 1.0, false)
-    this.hallSign = label('HALL OF FAME\nSeu look pode ficar aqui', 38.0, 3.2, 18.0, 0.95, NEON_GOLD)
+    this.hallSign = label('HALL OF FAME\nYour look could be here', 38.0, 3.2, 18.0, 0.95, NEON_GOLD)
 
     // ==========================================
     // 8. STUDIO RUNWAY LIGHTS (NATURAL WHITE & HIGH FIDELITY)
@@ -709,7 +709,7 @@ export class FashionWorld {
 
     // Update 3D in-world digital countdown timers
     const remainingSec = Math.max(0, Math.ceil(s.remaining))
-    const clockString = `TEMPO: ${remainingSec}s`
+    const clockString = `TIME: ${remainingSec}s`
     TextShape.getMutable(this.clockLeft).text = clockString
     TextShape.getMutable(this.clockRight).text = clockString
 
@@ -717,7 +717,7 @@ export class FashionWorld {
 
     // Theme banner text on backstage wall
     TextShape.getMutable(this.themeBanner).text =
-      s.phase === 'LOBBY' ? 'PREPARE SEU MELHOR LOOK' : THEMES[s.theme].title.toUpperCase()
+      s.phase === 'LOBBY' ? 'CREATE YOUR BEST LOOK' : THEMES[s.theme].title.toUpperCase()
 
     const duel = s.duels && s.duels[s.duelIndex]
     const isDuelActive = (s.phase === 'RUNWAY' || s.phase === 'VOTING' || s.phase === 'DUEL_RESULT') && !!duel
@@ -749,7 +749,7 @@ export class FashionWorld {
 
       // NEUTRALITY RULE:
       // Before duels (LOBBY, THEME_REVEAL, PREPARATION), ALL models are in neutral privacy robe.
-      // All contestants reveal after preparation; only the active pair performs emotes.
+      // Only the active pair reveals after its intro; backstage remains neutral.
       // In RESULTS, the podium winners are revealed.
       const shouldRobe = !outfitRevealed(s, c.id)
 
@@ -823,7 +823,7 @@ export class FashionWorld {
       this.champion.dress(w.outfit, w.winner, false)
       this.champion.pose(w.pose ?? 5, this.time)
       this.champion.effect(hasSparkles(w.outfit, w.cosmetics || []), this.time)
-      TextShape.getMutable(this.hallSign).text = `HALL OF FAME\n${w.name}\n${w.theme}\n${w.votes} votos`
+      TextShape.getMutable(this.hallSign).text = `HALL OF FAME\n${w.name}\n${w.theme}\n${w.votes} votes`
     }
   }
 }

@@ -202,7 +202,7 @@ test('back accessories attach to each local model, hide before reveal and reuse 
   assert.ok(world.figures[0].backParts.every(e => ecs.Transform.get(e).scale.x === 0))
 })
 
-test('backstage stays idle after reveal and local preview rotation does not rotate opponents', () => {
+test('backstage stays neutral and idle after active pair reveal and local preview rotation does not rotate opponents', () => {
   const { world, ecs, s, outfit } = fixture()
   s.phase = 'VOTING'
   s.cast = ['a', 'b', 'c'].map(id => ({ id, name: id, bot: true, outfit, pose: 1 }))
@@ -210,7 +210,7 @@ test('backstage stays idle after reveal and local preview rotation does not rota
   world.update(s, outfit, 0, 0.2, [], 'local', 90)
   const backstage = world.figures[2]
   assert.equal(ecs.AvatarShape.get(backstage.root).expressionTriggerId, '')
-  assert.deepEqual(ecs.AvatarShape.get(backstage.root).wearables, ecs.AvatarShape.get(world.figures[0].root).wearables)
+  assert.notDeepEqual(ecs.AvatarShape.get(backstage.root).wearables, ecs.AvatarShape.get(world.figures[0].root).wearables)
   const timestamp = ecs.AvatarShape.get(backstage.root).expressionTriggerTimestamp
   for (let i = 0; i < 20; i++) world.update(s, outfit, 0, 0.2, [], 'local', 90)
   assert.equal(ecs.AvatarShape.get(backstage.root).expressionTriggerTimestamp, timestamp)

@@ -1,957 +1,126 @@
-# DECENTEALAND FASHION BATTLE
-## GAME DESIGN DOCUMENT — TECHNICAL / AI DEVELOPMENT GUIDE
+# Decentealand Fashion Battle — Game Design Document
 
-**Projeto:** Decentealand  
-**Versão:** 1.0 MVP  
-**Objetivo:** Friendzone / Decentraland Hackathon  
-**Plataforma prioritária:** Mobile  
-**Documento destinado a:** Antigravity, Codex e desenvolvedores humanos
+Version 1.1 — submission scope, September 11, 2026. Platform: Decentraland SDK7, with mobile as the target experience.
 
----
+This English edition supersedes the original Portuguese 1.0 draft for this delivery. The original remains in [GDD-TECNICO.md](../GDD-TECNICO.md) for traceability. This is an explicit scope revision, not a claim that every feature in the original draft has been implemented. See [implementation-status.md](implementation-status.md) for evidence and remaining gaps.
 
-# 1. VISÃO GERAL
+## Product concept
 
-Decentealand Fashion Battle é uma experiência social multiplayer competitiva baseada em criação de outfits, interpretação de temas, performance e votação.
+Dress for an unexpected theme, perform in a one-on-one runway duel, vote on other contestants, earn Style Points, and play another round. The scene is a continuous social space: visitors may arrive mid-round, walk around, watch, and leave without ending the world.
 
-O jogador recebe um tema inesperado e possui tempo limitado para montar um visual.
+The intended appeal is interpreting playful prompts and seeing how other people interpret them. Bots fill empty contestant slots so one visitor can complete the loop. Bots support availability; they do not replace evidence of enjoyable human interaction.
 
-Após a preparação, os competidores aparecem no palco em duelos 1v1.
+## Core loop and timing
 
-Os jogadores que estão na audiência votam naquele que melhor interpretou o tema.
+Lobby → theme reveal → preparation → three runway duels and votes → final results → lobby.
 
-O resultado gera Style Points, progressão cosmética e registros no Hall of Fame.
+| Stage | Duration | Player experience |
+|---|---:|---|
+| Lobby | 15 s | Explore and wait for the next selection. A round requires human presence. |
+| Theme reveal | 4 s | Read the theme and its description. |
+| Preparation | 90 s | Open DRESS, choose clothing, SAVE the preferred look, and mark READY. |
+| Duel intro | 3 s per duel | Both contestants wear neutral outfits during the countdown. |
+| Runway poses | 20 s per duel | Only the active pair reveals and performs; backstage stays neutral. |
+| Voting | Up to 10 s per duel | Eligible audience members vote A or B. All required votes can end this phase early. |
+| Duel result | 6 s per duel | Display the winner and vote totals. |
+| Final results | 15 s | Show Top 3 and the local player's earned Style Points. |
+| Return | 3 s | Continue automatically to the next lobby. |
 
-## CORE LOOP
+Maximum nominal cycle: 244 seconds. Timings are deliberately unchanged for this delivery. READY does not shorten preparation. The wardrobe closes at the last second; the last accepted look remains locked for the round. The installed Game Design skill recommends a core loop below 60 seconds; this round does not meet that recommendation. Timing evaluation is deferred, not presented as resolved.
 
-LOBBY  
-↓  
-THEME REVEAL  
-↓  
-WARDROBE  
-↓  
-RUNWAY DUEL  
-↓  
-VOTING  
-↓  
-RESULTS  
-↓  
-REWARD  
-↓  
-LOBBY  
-↓  
-NEXT ROUND
+## Participants and social interaction
 
-## PRINCÍPIO DO PRODUTO
+A round has six contestants arranged into three distinct pairs. Each contestant competes once per round. Humans fill available slots and bots fill the remainder; excess humans rotate into subsequent rounds. Late arrivals can watch and vote when eligible without changing the current cast.
 
-O jogador deve:
+Each eligible audience member has one vote per duel. Active duelists cannot vote in their own duel. Self-votes, duplicate votes, stale requests and invalid candidates are rejected by the coordinating client's game rules. A pending and confirmed vote state provides feedback. Bots use theme tags, style preferences and bounded variation.
 
-**DRESS → POSE → VOTE → WIN → REPEAT**
+Presence expiry handles missing heartbeats, not inactivity: standing still does not count as AFK. No player is expelled from the scene. A disconnected contestant may remain represented by its NPC until the round ends.
 
-A experiência deve ser fácil de entender em menos de 10 segundos e permitir uma partida curta, social e repetível.
+## Wardrobe and saved looks
 
----
+The shared free catalog contains 200 wearable URNs with bundled thumbnails. The outfit is applied to scene-owned models, not a purchase or permanent change to the visitor's wallet avatar.
 
-# 2. REGRAS DE ESCOPO
+Navigation uses Upper (shirts, sweaters, tops, jackets), Lower (pants, skirts, shorts), Full body (dresses, jumpsuits), Feet (sandals, heels, sneakers, boots, shoes), Hair, Accessories, Appearance and Effects. Types are inferred from catalog names. Full-body items reuse the catalog's existing upper-body slot; these are not newly authored assets.
 
-## PRIORIDADE MÁXIMA
+DRESS opens the fitting view. SAVE stores an independent local snapshot and closes it. On the first opening in each later round, the saved snapshot is restored automatically. Reopening in the same round preserves edits. FREE CAMERA closes the fitting view without saving or discarding the currently equipped edits; DRESS returns to it. There is one preset, in memory for the current client session only. Reloading or changing machines does not transfer it.
 
-O MVP deve possuir uma partida completa e funcional.
+The old Backpack/Back selector and location shortcut menu are outside this revised delivery scope. The corresponding legacy data may remain for compatibility.
 
-Toda feature deve ser avaliada nesta ordem:
+## Reveal and camera freedom
 
-1. Jogabilidade.
-2. Multiplayer/social.
-3. Mobile UX.
-4. Retenção.
-5. Apresentação/polish.
-6. Features secundárias.
+Theme reveal and preparation keep contestant models neutral. During each runway intro, the active pair is still neutral. After the three-second countdown, only that pair reveals. Inactive contestants remain neutral during runway, voting and duel results. Final results reveal the cast.
 
-Se uma feature ameaçar impedir o loop principal de funcionar, ela deve ser adiada.
+This is visual concealment on scene models, not cryptographic secrecy. Outfit data is synchronized to clients, and visitors' own Explorer avatars outside the privacy volume are not hidden by a global rule. Remote wearable loading can affect the visible reveal timing.
 
-## NÃO FAZER
+The default view is the Explorer's normal player camera. WATCH STAGE opts into framing during runway, voting, duel results and final results. FREE CAMERA immediately requests release of the scene camera and restores ordinary exploration. The choice persists across phase changes locally; phase changes never teleport the visitor. Opening DRESS explicitly selects fitting-room framing; FREE CAMERA exits it. Camera selection does not affect voting eligibility, scoring or round membership, and is not a spectator-only participation opt-out.
 
-Não criar:
+The scene does not disable locomotion. Camera changes target scene-owned virtual cameras without moving the player's avatar.
 
-- mundo enorme;
-- economia complexa;
-- combate;
-- inventário blockchain completo;
-- sistemas desnecessários de crafting;
-- IA generativa para criação de roupas;
-- meta-game complexo;
-- sistemas que não impactem diretamente a experiência principal.
+## Rewards and reasons to repeat
 
----
+Participation awards 10 SP, each duel win awards 50 SP, and the overall champion receives an additional 100 SP. Results show names, votes and duel wins for the Top 3, plus the local player's earned points. A tie is resolved by the deterministic ranking rules in the model.
 
-# 3. ISOLAMENTO DA CENA
+Clothing remains free. Session SP can buy Superstar Pose (250), Royal Pose (400), Sparkles Effect (500) and Fashion Icon title (1,000). Purchases do not grant voting strength. Pose labels map to built-in Decentraland emotes; they are not custom animations.
 
-IMPORTANTE:
+The Hall stores up to 20 session wins and displays the latest champion. Today/week/session rankings are computed only from session accounts. The retention promise is another round during the current session. Persistent balances, unlocks, saved presets, global rankings and history across visits are roadmap features.
 
-A experiência deve ser construída em uma NOVA CENA/MÓDULO.
+## MVP Scope
 
-Não destruir ou substituir o trabalho anterior do projeto.
+| Required system | Delivery definition |
+|---|---|
+| Lobby | A live entry space and automatically repeating round lobby. |
+| Theme system | Shared theme title and description before preparation. |
+| Six-contestant structure | Six contestants, bot filling and three unique 1v1 pairs. |
+| Wardrobe | Free catalog, grouped navigation, outfit editing and one automatically restored session preset. |
+| Outfit privacy and reveal | Neutral shared models until the active pair's intro ends. |
+| Runway | Active pair on stage, built-in pose selection and opt-in framing. |
+| Voting | One eligible vote per duel, validation and confirmation feedback. |
+| Bots | Fill, dress, pose and vote without blocking the loop. |
+| Results | Top 3, duel totals and local earned SP. |
+| Style Points | Session rewards, balances and cosmetic purchases. |
+| Repeat loop | Automatic next round without restarting the application. |
+| Camera freedom | Enter/exit fitting and stage views; no automatic player relocation. |
+| Mobile UI | Touch controls, safe-area layout and readable access to the core loop; physical-device validation remains outstanding. |
 
-Antes de programar:
+## Architecture and trust model
 
-- analisar estrutura existente;
-- identificar cena atual;
-- identificar infraestrutura multiplayer existente;
-- identificar sistemas de avatar;
-- identificar componentes reutilizáveis.
+SDK7 TypeScript creates the scene with ECS entities and React-ECS UI. A pure state model controls phases, votes and rewards. CRDT Presence components carry intentions and heartbeats; an elected client advances and publishes the shared Session. The coordinator is not a trusted backend. This delivery does not claim server-authoritative anti-cheat, durable storage, an on-chain economy or progress while no clients remain.
 
-Sempre reutilizar infraestrutura existente quando apropriado.
+The arena uses six parcels in a 3×2 layout. Assets include local thumbnails and original audio; wearables resolve remotely. The configured deployment target is the World `leined.eth`. Publishing requires the authorized owner's signature; pushing the repository does not deploy the World.
 
-Evitar refactors globais.
+## Presentation and audio
 
-A nova experiência deve ser modular e removível.
+English scene controls, theme descriptions and delivery documentation. A 40-second local instrumental loop accompanies gameplay. A three-second chime signals phase changes and a short sound acknowledges voting. Background audio ducks for effects and returns afterward. Distinct victory audio and sound feedback for every clothing/save action are not part of the implemented polish.
 
----
+## Explicit revisions from version 1.0
 
-# 4. ESTRUTURA DA EXPERIÊNCIA
-
-A arena deve possuir quatro áreas principais.
-
-## 4.1 LOBBY
-
-Funções:
-
-- spawn;
-- espera;
-- socialização;
-- countdown;
-- informações da próxima partida;
-- número de jogadores;
-- acesso visual ao palco.
-
-Elementos:
-
-- Fashion Battle logo;
-- Next Round timer;
-- Player count;
-- Hall of Fame preview;
-- instruções rápidas.
-
----
-
-## 4.2 WARDROBE AREA
-
-Área dedicada à preparação.
-
-Durante a preparação:
-
-- jogador escolhe outfit;
-- altera categorias;
-- visualiza resultado;
-- confirma participação.
-
-Todos os jogadores devem possuir acesso aos cosméticos disponíveis.
-
----
-
-## 4.3 RUNWAY / STAGE
-
-Palco principal.
-
-Elementos:
-
-- dois slots de competidor;
-- iluminação;
-- backdrop;
-- display do tema;
-- spotlight;
-- efeitos opcionais;
-- área de audiência.
-
-Somente dois jogadores permanecem no palco por duelo.
-
----
-
-## 4.4 HALL OF FAME
-
-Espaço persistente ou preparado para persistência.
-
-Exibir:
-
-- vencedores;
-- temas;
-- votos;
-- melhores looks;
-- campeões recentes.
-
-Posteriormente pode conter modelos/estátuas dos vencedores.
-
----
-
-# 5. PARTICIPANTES
-
-Configuração inicial:
-
-**6 participantes por partida**
-
-Estrutura:
-
-2 jogadores = palco  
-4 jogadores = audiência
-
-Os jogadores competem em múltiplos duelos.
-
-Jogadores insuficientes são preenchidos por bots.
-
-Configuração:
-
-MAX_PLAYERS = 6  
-MAX_STAGE_PLAYERS = 2
-
----
-
-# 6. BOT SYSTEM
-
-Bots existem para garantir que a experiência permaneça jogável com baixa população.
-
-Bots devem:
-
-- escolher outfit;
-- interpretar tema;
-- executar pose;
-- competir;
-- votar.
-
-Bots NÃO precisam utilizar IA generativa.
-
-## PERSONALIDADES
-
-### FASHIONISTA
-
-Busca elegância e coordenação.
-
-### CHAOS
-
-Busca combinações estranhas/divertidas.
-
-### CYBERPUNK
-
-Prioriza elementos tecnológicos.
-
-### SPACE COWBOY
-
-Prioriza roupas western/futuristas.
-
-### COMEDIAN
-
-Busca interpretações absurdas.
-
-O algoritmo pode combinar:
-
-Theme keywords  
-+  
-Bot personality  
-+  
-Available cosmetics  
-+  
-controlled randomness
-
----
-
-# 7. TEMAS
-
-Os temas devem ser interpretativos.
-
-O jogador nunca deve ser obrigado tecnicamente a usar determinada categoria de item.
-
-O objetivo é interpretação social.
-
-## TIPOS
-
-### DIRECT
-
-Summer on Saturn  
-Winter on Mars
-
-### CONCEPTUAL
-
-Light & Shadow  
-Future Nostalgia
-
-### HUMOROUS
-
-Make Me Laugh  
-Worst Outfit Ever
-
-### CHARACTER
-
-Space Cowboy  
-Alien Celebrity
-
-### SITUATIONAL
-
-First Date on the Moon  
-Royal Wedding on Mars
-
-O sistema deve ser data-driven.
-
-Estrutura:
-
-Theme
-
-- id
-- title
-- description
-- keywords
-- category
-
----
-
-# 8. PREPARAÇÃO
-
-Tempo recomendado inicial:
-
-**60 segundos**
-
-Pode ser configurável.
-
-Ao começar:
-
-THEME REVEAL
-
-O tema é apresentado de forma dramática.
-
-Depois:
-
-PREPARE YOUR LOOK  
-60...59...58...
-
----
-
-# 9. OUTFIT PRIVACY
-
-Durante a preparação, os participantes NÃO devem conseguir ver claramente os outfits dos outros.
-
-Utilizar:
-
-- robe padrão;
-- avatar placeholder;
-- outro sistema visual equivalente.
-
-Objetivo:
-
-- impedir cópia;
-- preservar suspense;
-- aumentar impacto do reveal.
-
-Quando o jogador entra no palco:
-
-**OUTFIT REVEAL**
-
-O look real aparece.
-
----
-
-# 10. WARDROBE
-
-Todos os cosméticos necessários para a experiência devem estar disponíveis no MVP.
-
-NÃO utilizar raridade ou posse externa como requisito para competir.
-
-Categorias:
-
-- Head
-- Hair
-- Face
-- Top
-- Bottom
-- Shoes
-- Hat
-- Glasses
-- Accessories
-- Back
-- Effects
-
-O inventário deve ser inicialmente MOCK/LOCAL se a integração completa for complexa.
-
-A camada de dados deve permitir substituir posteriormente:
-
-Mock Inventory  
-→  
-Decentraland Wearables / Inventory
-
-sem reescrever o jogo.
-
----
-
-# 11. PRESETS
-
-Permitir salvar pelo menos um outfit durante a sessão.
-
-Opcional futuro:
-
-- Preset 1
-- Preset 2
-- Preset 3
-
-Presets são especialmente úteis para temas recorrentes.
-
----
-
-# 12. DUEL SYSTEM
-
-Após a preparação:
-
-Os seis participantes são organizados em três confrontos.
-
-Exemplo:
-
-DUEL 1  
-A × B
-
-DUEL 2  
-C × D
-
-DUEL 3  
-E × F
-
-Cada duelo possui:
-
-- entrada;
-- reveal;
-- pose;
-- votação;
-- resultado/intermediário.
-
----
-
-# 13. RUNWAY PRESENTATION
-
-Cada duelo deve ter uma apresentação curta.
-
-Sequência:
-
-SPOTLIGHT  
-↓  
-3  
-↓  
-2  
-↓  
-1  
-↓  
-REVEAL  
-↓  
-POSE
-
-O competidor deve poder executar uma pose/emote.
-
-A câmera deve favorecer o espetáculo.
-
----
-
-# 14. POSES / EMOTES
-
-MVP:
-
-- Hero
-- Dance
-- Flex
-- Cool
-- Wave
-- Victory
-- Laugh
-- Point
-
-A arquitetura deve abstrair a implementação de animação.
-
-Pose:
-
-- id
-- name
-- animation
-- optional effect
-
-Utilizar recursos nativos do Decentraland quando disponíveis.
-
----
-
-# 15. VOTING
-
-A audiência vê dois competidores.
-
-Pergunta:
-
-# WHO WORE IT BEST?
-
-Opções:
-
-VOTE PLAYER A  
-VOTE PLAYER B
-
-Cada pessoa possui um voto.
-
-Competidores daquele duelo não votam em si mesmos.
-
-Depois de votar:
-
-- botão desaparece;
-- voto é registrado;
-- spotlight mostra a escolha.
-
----
-
-# 16. VOTING FEEDBACK
-
-Após votar:
-
-O participante escolhido recebe um spotlight.
-
-Texto opcional:
-
-VOTE CAST
-
-Isso fornece confirmação visual imediata.
-
-Não revelar publicamente quem votou em quem.
-
----
-
-# 17. VOTING ALGORITHM
-
-Modelo inicial:
-
-Cada espectador = 1 voto.
-
-Duelo:
-
-votesA  
-vs  
-votesB
-
-Vencedor do duelo recebe:
-
-+DUEL_WIN_POINTS
-
-O sistema deve permanecer server-authoritative quando multiplayer real estiver disponível.
-
-Não confiar no cliente para determinar o resultado.
-
----
-
-# 18. BOT VOTING
-
-Bots utilizam score interno.
-
-Exemplo:
-
-themeMatchScore  
-+ outfitCoherence  
-+ personalityPreference  
-+ randomness
-
-A aleatoriedade deve ser limitada para impedir resultados totalmente arbitrários.
-
----
-
-# 19. ROUND SCORING
-
-Sugestão inicial:
-
-Participation = 10  
-Duel Win = 50  
-Final Winner Bonus = 100
-
-Valores centralizados em configuração.
-
-O sistema pode posteriormente ser balanceado.
-
----
-
-# 20. RESULTADOS
-
-Após todos os duelos:
-
-# FASHION BATTLE RESULTS
-
-Mostrar:
-
-🥇 FIRST PLACE  
-🥈 SECOND PLACE  
-🥉 THIRD PLACE
-
-Mostrar:
-
-- nome;
-- votos;
-- duelos vencidos;
-- Style Points ganhos.
-
-Todos os participantes recebem algum progresso.
-
----
-
-# 21. STYLE POINTS
-
-Moeda interna de progressão.
-
-Usada para desbloquear elementos cosméticos da experiência.
-
-NÃO usar os pontos para bloquear as roupas fundamentais.
-
-Style Points desbloqueiam:
-
-- poses;
-- efeitos;
-- entrances;
-- títulos;
-- celebration animations;
-- presentation cosmetics.
-
----
-
-# 22. PERFORMANCE COSMETICS
-
-Inspirado na ideia de que apresentação faz parte do espetáculo.
-
-Exemplos:
-
-SPOTLIGHT  
-CONFETTI  
-HEARTS  
-SMOKE  
-FIRE  
-SPARKLES  
-DANCE FLOOR  
-SPECIAL ENTRANCE
-
-Esses elementos devem ser cosméticos.
-
-Nunca conceder vantagem competitiva direta.
-
----
-
-# 23. SHOP
-
-STYLE SHOP
-
-Itens exemplo:
-
-Superstar Pose — 250  
-Confetti Effect — 300  
-Royal Entrance — 500  
-Fire Entrance — 750  
-Fashion Icon Title — 1000
-
-Todos os preços devem ser configuráveis.
-
----
-
-# 24. RECOMPENSA DE PARTICIPAÇÃO
-
-Todos recebem alguma recompensa.
-
-Objetivo:
-
-evitar:
-
-LOSS → ZERO PROGRESS → QUIT
-
-Em vez disso:
-
-LOSS → SMALL REWARD → TRY AGAIN
-
----
-
-# 25. HALL OF FAME DATA
-
-Estrutura:
-
-FashionRecord
-
-- winnerId
-- winnerName
-- theme
-- votes
-- date
-- outfit
-- pose
-- cosmetics/effects
-
----
-
-# 26. HALL OF FAME VISUAL
-
-Após a vitória:
-
-O look vencedor pode aparecer em um display.
-
-Formato:
-
-🏆 WINNER
-
-SUMMER ON SATURN
-
-Player Name
-
-87 Votes
-
-Podemos posteriormente gerar uma representação persistente do avatar.
-
----
-
-# 27. RANKINGS
-
-Preparar suporte para:
-
-BEST OF THE DAY  
-BEST OF THE WEEK  
-BEST OF ALL TIME
-
-Métricas possíveis:
-
-- wins;
-- votes received;
-- total participations;
-- win rate.
-
-Não é obrigatório implementar ranking global no primeiro MVP.
-
----
-
-# 28. GAME STATES
-
-Implementar uma máquina de estados única.
-
-LOBBY  
-THEME_REVEAL  
-PREPARATION  
-DUEL_SETUP  
-RUNWAY_REVEAL  
-POSE  
-VOTING  
-DUEL_RESULT  
-FINAL_RESULTS  
-RETURN_TO_LOBBY
-
-Cada estado precisa ter:
-
-- entry;
-- duration;
-- UI;
-- logic;
-- exit condition.
-
----
-
-# 29. MOBILE-FIRST UX
-
-A experiência deve funcionar por touchscreen.
-
-Botões:
-
-- grandes;
-- claros;
-- poucos por tela.
-
-Priorizar:
-
-Tap  
-Swipe  
-Simple selection
-
-Evitar dependência de:
-
-Keyboard  
-Mouse precision  
-Tiny UI elements
-
----
-
-# 30. PERFORMANCE
-
-Arena pequena.
-
-Low poly.
-
-Poucos efeitos simultâneos.
-
-Evitar assets gigantes.
-
-Evitar lógica contínua desnecessária.
-
-Especialmente importante:
-
-- loading;
-- avatar performance;
-- UI responsiveness;
-- network traffic.
-
----
-
-# 31. ÁUDIO
-
-Feedback prioritário:
-
-THEME REVEAL  
-COUNTDOWN  
-RUNWAY  
-VOTE  
-VICTORY
-
-Música de fundo pode ser adicionada posteriormente.
-
----
-
-# 32. RETENTION
-
-O sistema deve incentivar:
-
-"mais uma partida."
-
-Mecanismos:
-
-- temas diferentes;
-- progressão;
-- desbloqueios;
-- Hall of Fame;
-- competição;
-- bots;
-- rankings;
-- melhores performances.
-
----
-
-# 33. MVP MUST-HAVE
-
-Obrigatório:
-
-✓ Lobby  
-✓ Theme system  
-✓ 6-player structure  
-✓ Wardrobe  
-✓ Outfit privacy  
-✓ 1v1 runway  
-✓ Poses  
-✓ Voting  
-✓ Bots  
-✓ Results  
-✓ Style Points  
-✓ Repeat loop  
-✓ Mobile UI
-
----
-
-# 34. MVP NICE-TO-HAVE
-
-Adicionar depois:
-
-○ Hall of Fame persistente  
-○ Performance cosmetics  
-○ Advanced bot personalities  
-○ Global rankings  
-○ Saved presets  
-○ Special entrances  
-○ Audio polish
-
----
-
-# 35. FUTURE FEATURES
-
-Possibilidades futuras:
-
-- seasonal themes;
-- tournaments;
-- community-created themes;
-- weekly championship;
-- global leaderboard;
-- fashion collections;
-- player-created stages;
-- special events;
-- sponsored themes;
-- historical Hall of Fame;
-- avatar snapshots.
-
----
-
-# 36. CRITÉRIO DE QUALIDADE
-
-O MVP somente será considerado pronto quando:
-
-1. jogador entra;
-2. recebe tema;
-3. cria outfit;
-4. outros jogadores não veem seu outfit;
-5. jogadores entram no palco;
-6. outfit é revelado;
-7. pose acontece;
-8. audiência vota;
-9. resultado é calculado;
-10. recompensa é entregue;
-11. jogador retorna ao lobby;
-12. outra partida começa.
-
-Tudo deve funcionar sem reinicialização manual.
-
----
-
-# 37. ORDEM DE DESENVOLVIMENTO
-
-PHASE 1  
-Cena isolada
-
-PHASE 2  
-Lobby + Stage
-
-PHASE 3  
-Game State Machine
-
-PHASE 4  
-Theme System
-
-PHASE 5  
-Wardrobe
-
-PHASE 6  
-Duel System
-
-PHASE 7  
-Voting
-
-PHASE 8  
-Bots
-
-PHASE 9  
-Rewards
-
-PHASE 10  
-Mobile polish
-
-PHASE 11  
-Hall of Fame
-
-PHASE 12  
-Testing
-
----
-
-# 38. REGRA FINAL PARA A IA
-
-Não confundir complexidade técnica com qualidade.
-
-O objetivo é:
-
-**uma experiência pequena, extremamente polida, social e repetível.**
-
-A experiência precisa ser divertida mesmo com poucos jogadores.
-
-O jogador deve entender imediatamente:
-
-"Recebi um tema."
-
-"Vou me vestir."
-
-"Vou subir no palco."
-
-"As pessoas vão votar."
-
-"Quero ganhar."
-
-# DRESS.
-# POSE.
-# VOTE.
-# WIN.
-# REPEAT.
+- Preparation is 90 seconds, not the suggested 60; duration tuning is deferred.
+- Eight actual phases replace the ten proposed labels; intro and pose are timed portions of RUNWAY.
+- Each contestant plays one duel per round, not several.
+- Scene models display outfits; wallet inventory/economy is not a delivery requirement.
+- One automatically restored local session preset replaces a separate restore menu.
+- Back selection is removed from the delivery UI.
+- Camera framing is optional and does not teleport visitors.
+- Top 3 shows vote/duel totals; SP gain is local, rather than shown for every finalist.
+- Client coordination replaces the proposed trusted server for this prototype. Trust limitations remain explicit.
+- Retention, ranks, Hall and cosmetics are session-only. Persistent and global systems remain roadmap.
+- Royal is a pose purchase, not a special entrance. Additional example effects are roadmap.
+
+## Roadmap and evaluation gaps
+
+Persistent progress and unlocks; trusted authoritative service; global rankings and historical Hall; special entrances and additional effects; expanded bot outfit coverage; measured asset loading and runtime budgets; mobile readability and performance; multi-device reconnection and five-human sessions; unsolicited reviewer playtests; measured return rates.
+
+These are not completed features or guarantees of program acceptance. Current delivery evidence and its capture limitations are tracked separately in the implementation report.
+
+## Running the prototype
+
+```sh
+git clone --branch codex/hackathon-mvp https://github.com/dlb93la/decentealand-fashion-battle.git
+cd decentealand-fashion-battle
+npm ci
+npm test
+npm run build
+npm start
+```
+
+Use Node.js 22 LTS and internet access for dependencies and wearable assets. `npm start` serves port 8010 and opens Bevy Web. For mobile preview use `npm run start:mobile` and the CLI QR on the same LAN; if it selects a VPN address, substitute the computer's LAN IP. The server health route is `/about`; `/` is not the playable application.

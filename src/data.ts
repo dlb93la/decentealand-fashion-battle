@@ -33,77 +33,77 @@ export const THEMES: Theme[] = [
   {
     id: 'theme-0',
     title: 'Summer on Saturn',
-    description: 'Sol, anéis e cores quentes sob gravidade baixa',
+    description: 'Sunshine, rings and warm colors in low gravity',
     keywords: ['sun', 'space'],
     type: 'DIRECT'
   },
   {
     id: 'theme-1',
     title: 'Date Night on the Moon',
-    description: 'Romance estelar fora de órbita',
+    description: 'Stellar romance beyond orbit',
     keywords: ['royal', 'space'],
     type: 'SITUATIONAL'
   },
   {
     id: 'theme-2',
     title: 'Zombie Prom',
-    description: 'Alta-costura elegante e macabra do outro mundo',
+    description: 'Elegant, eerie couture from beyond',
     keywords: ['chaos', 'royal'],
     type: 'HUMOROUS'
   },
   {
     id: 'theme-3',
     title: 'Cyberpunk Apocalypse',
-    description: 'Neon, couro e circuitos após o fim do mundo',
+    description: 'Neon, leather and circuits after the end of the world',
     keywords: ['cyber', 'chaos'],
     type: 'CONCEPTUAL'
   },
   {
     id: 'theme-4',
     title: 'Space Cowboy',
-    description: 'Oeste interestelar sem gravidade',
+    description: 'The interstellar Wild West in zero gravity',
     keywords: ['western', 'space'],
     type: 'CHARACTER'
   },
   {
     id: 'theme-5',
     title: 'Alien Celebrity',
-    description: 'Tapete vermelho na galáxia vizinha',
+    description: 'The red carpet in the next galaxy',
     keywords: ['space', 'royal'],
     type: 'CHARACTER'
   },
   {
     id: 'theme-6',
     title: 'First Date in 3026',
-    description: 'O futuro hiperconectado do romance',
+    description: 'The hyperconnected future of romance',
     keywords: ['cyber', 'royal'],
     type: 'SITUATIONAL'
   },
   {
     id: 'theme-7',
     title: 'Villain at a Wedding',
-    description: 'Roube a cena com elegância, não o bolo',
+    description: 'Steal the spotlight with elegance, not the cake',
     keywords: ['chaos', 'royal'],
     type: 'HUMOROUS'
   },
   {
     id: 'theme-8',
     title: 'Light & Shadow',
-    description: 'Contraste minimalista preto e branco',
+    description: 'Minimalist contrast in black and white',
     keywords: ['space', 'royal'],
     type: 'CONCEPTUAL'
   },
   {
     id: 'theme-9',
     title: 'Worst Outfit Ever',
-    description: 'O ápice da cafonice com muito orgulho',
+    description: 'Clashing styles, worn with pride',
     keywords: ['chaos', 'sun'],
     type: 'HUMOROUS'
   },
   {
     id: 'theme-10',
     title: 'Rich Degen on Mars',
-    description: 'Luxo ostensivo no planeta vermelho',
+    description: 'Bold luxury on the red planet',
     keywords: ['royal', 'space'],
     type: 'CHARACTER'
   }
@@ -143,26 +143,26 @@ export const STYLES = [
 
 export const POSES = ['Hero', 'Dance', 'Cool', 'Laugh', 'Flex', 'Victory', 'Point', 'Wave']
 const TOP_STYLES = [...STYLES,
-  { name: 'Jaqueta', color: '#34343C', tag: 'cyber' },
-  { name: 'Pulôver', color: '#A89F8A', tag: 'space' },
-  { name: 'Vestido', color: '#AA7953', tag: 'royal' }]
+  { name: 'Jacket', color: '#34343C', tag: 'cyber' },
+  { name: 'Sweater', color: '#A89F8A', tag: 'space' },
+  { name: 'Dress', color: '#AA7953', tag: 'royal' }]
 
 export const SHOP = [
-  { id: 'superstar', name: 'Pose Superstar', price: 250 },
-  { id: 'royal', name: 'Pose Royal', price: 400 },
-  { id: 'sparkles', name: 'Efeito Sparkles', price: 500 },
-  { id: 'icon', name: 'Título Fashion Icon', price: 1000 }
+  { id: 'superstar', name: 'Superstar Pose', price: 250 },
+  { id: 'royal', name: 'Royal Pose', price: 400 },
+  { id: 'sparkles', name: 'Sparkles Effect', price: 500 },
+  { id: 'icon', name: 'Fashion Icon title', price: 1000 }
 ]
 
 export const SKIN_TONES = ['#E6C7A6', '#F3DAC5', '#CF9D76', '#AD7753', '#805237', '#513426']
-const HEAD_ITEMS = SKIN_TONES.map((color, i) => ({ name: 'Tom ' + (i + 1), color, tag: '' }))
-const FACE_ITEMS = STYLES.map((style, i) => ({ ...style, name: 'Rosto ' + (i + 1), tag: '' }))
+const HEAD_ITEMS = SKIN_TONES.map((color, i) => ({ name: 'Skin tone ' + (i + 1), color, tag: '' }))
+const FACE_ITEMS = STYLES.map((style, i) => ({ ...style, name: 'Face ' + (i + 1), tag: '' }))
 const EFFECT_ITEMS = [
-  { name: 'Nenhum', color: '#ECEBE5', tag: '' },
+  { name: 'None', color: '#ECEBE5', tag: '' },
   { name: 'Sparkles', color: '#C9B894', tag: '' }
 ]
 const BACK_ITEMS = [
-  { name: 'Nenhum', color: '#ECEBE5', tag: '' },
+  { name: 'None', color: '#ECEBE5', tag: '' },
   { name: 'Explorer', color: '#AD795A', tag: 'western' },
   { name: 'Jetpack', color: '#B5A4F5', tag: 'space' },
   { name: 'Wings', color: '#ECEBE5', tag: 'royal' }

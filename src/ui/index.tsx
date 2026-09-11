@@ -92,8 +92,18 @@ export function renderUi(n: FashionNetwork, controller: UiController = uiControl
       <HeaderPill state={s} memberCount={n.members.length} />
       {s.phase === 'PREPARATION' && activeTab === 'game' ?
         <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 120, right: 4 } }}>
-          <ActionButton value="GIRAR LOOK" width={100} height={44} fontSize={12}
+          <ActionButton value="ROTATE LOOK" width={100} height={44} fontSize={12}
             action={() => { controller.previewAngle = (controller.previewAngle + 45) % 360 }} />
+        </UiEntity> : null}
+
+      {m && (controller.wardrobeOpen || ['RUNWAY', 'VOTING', 'DUEL_RESULT', 'RESULTS'].includes(s.phase)) ?
+        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 76, left: 12 } }}>
+          <ActionButton value={controller.wardrobeOpen || controller.watchStage ? 'FREE CAMERA' : 'WATCH STAGE'}
+            width={176} height={48} fontSize={16}
+            action={() => {
+              if (controller.wardrobeOpen || controller.watchStage) controller.freeCamera()
+              else controller.watchStage = true
+            }} />
         </UiEntity> : null}
 
       {/* 2. Minimalist Top Right Balance Badge & Quick Menu */}
@@ -103,11 +113,11 @@ export function renderUi(n: FashionNetwork, controller: UiController = uiControl
 
       {/* 4. Active Contextual Action Views or Modals */}
       {activeTab === 'shop' ? (
-        <ModalContainer title="LOJA DE ESTILO" onClose={() => controller.setTab('game')}>
+        <ModalContainer title="STYLE SHOP" onClose={() => controller.setTab('game')}>
           <ShopView state={s} network={n} mine={m} controller={controller} />
         </ModalContainer>
       ) : activeTab === 'rank' ? (
-        <ModalContainer title="RANKING DA SESSÃO" onClose={() => controller.setTab('game')}>
+        <ModalContainer title="SESSION RANKING" onClose={() => controller.setTab('game')}>
           <RankView state={s} controller={controller} />
         </ModalContainer>
       ) : s.phase === 'PREPARATION' ? (
@@ -130,7 +140,7 @@ export function renderUi(n: FashionNetwork, controller: UiController = uiControl
           <Label
             value={
               (s.cast.find((c) => c.id === s.duels[s.duelIndex]?.winnerId)?.name || '') +
-              ' venceu  /  ' +
+              ' wins  /  ' +
               s.duels[s.duelIndex]?.votesA +
               ' : ' +
               s.duels[s.duelIndex]?.votesB

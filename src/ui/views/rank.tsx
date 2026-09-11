@@ -14,7 +14,7 @@ export function RankView(props: { state: State; controller: UiController }) {
     <UiEntity uiTransform={{ width: '100%', height: '100%', flexDirection: 'column' }}>
       <UiEntity uiTransform={{ width: '100%', height: 52, flexDirection: 'row', justifyContent: 'center' }}>
         {(['day', 'week', 'all'] as const).map((period, i) => (
-          <ActionButton key={period} value={['HOJE', 'SEMANA', 'SESSÃO'][i]} width={Math.min(100, (UI_DIMENSIONS.modalWidth - 50) / 3)}
+          <ActionButton key={period} value={['TODAY', 'WEEK', 'SESSION'][i]} width={Math.min(100, (UI_DIMENSIONS.modalWidth - 50) / 3)}
             fontSize={12}
             active={controller.rankingPeriod === period} action={() => { controller.rankingPeriod = period }} />
         ))}
@@ -22,7 +22,7 @@ export function RankView(props: { state: State; controller: UiController }) {
       <UiEntity uiTransform={{ width: '100%', height: 220, flexDirection: 'column' }}>
         {ranked.length === 0 ? (
           <TextLabel
-            value="Nenhuma pontuação registrada ainda."
+            value="No scores recorded yet."
             height={60}
             fontSize={18}
             color={THEME_COLORS.disabledText}
@@ -38,7 +38,7 @@ export function RankView(props: { state: State; controller: UiController }) {
             return (
               <TextLabel
                 key={id}
-                value={`${i + 1}. ${displayName}\n${acc.wins}V · ${acc.votes} votos · ${acc.participations} jogos · ${acc.winRate}%`}
+                value={`${i + 1}. ${displayName}\n${acc.wins}V · ${acc.votes} votes · ${acc.participations} rounds · ${acc.winRate}%`}
                 height={42}
                 fontSize={14}
                 color={i === 0 ? THEME_COLORS.gold : THEME_COLORS.cream}

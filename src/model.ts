@@ -130,7 +130,12 @@ export function pendingVote(s: State, m?: Member): string {
 }
 
 export function outfitRevealed(s: State, id: string): boolean {
-  return s.cast.some((c) => c.id === id) && ['RUNWAY', 'VOTING', 'DUEL_RESULT', 'RESULTS'].includes(s.phase)
+  if (!s.cast.some((c) => c.id === id)) return false
+  if (s.phase === 'RESULTS') return true
+  if (!['RUNWAY', 'VOTING', 'DUEL_RESULT'].includes(s.phase)) return false
+  const duel = currentDuel(s)
+  return !!duel && (duel.aId === id || duel.bId === id) &&
+    (s.phase !== 'RUNWAY' || s.remaining <= CONFIG.duelPose)
 }
 
 export function currentDuelists(s: State): [Candidate | undefined, Candidate | undefined] {

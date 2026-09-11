@@ -13,7 +13,7 @@ test('wardrobe groups preserve equip indices and do not expose placeholder backp
   }
   for (const slot of ['Top','Bottom','Shoes','Hair','Accessories','Glasses','Hat','Head','Eyes','Face','Effects'])
     assert.equal(all.filter(i => i.slot === slot).length, inventory.items(slot).length)
-  assert.ok(wardrobeGroups.find(g => g.name === 'Corpo todo').items.some(i => i.type === 'Macacões'))
-  assert.ok(wardrobeGroups.find(g => g.name === 'Corpo todo').items.some(i => i.type === 'Vestidos'))
+  assert.ok(wardrobeGroups.find(g => g.name === 'Full body').items.some(i => i.type === 'Jumpsuits'))
+  assert.ok(wardrobeGroups.find(g => g.name === 'Full body').items.some(i => i.type === 'Dresses'))
   assert.ok(!wardrobeGroups[0].items.some(i => /dress|dungaree/i.test(i.name)))
 })

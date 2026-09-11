@@ -21,12 +21,12 @@ export function VotingView(props: { state: State; network: FashionNetwork; mine?
 
   let statusText = ''
   if (isMeInThisDuel) {
-    statusText = 'Sua vez no palco'
+    statusText = 'Your turn on stage'
   } else if (confirmedVote) {
     const candidateName = s.cast.find((c) => c.id === confirmedVote)?.name || confirmedVote
-    statusText = `✓ Voto registrado: ${candidateName}`
+    statusText = `✓ Vote confirmed: ${candidateName}`
   } else if (pendingVote) {
-    statusText = `⏳ Confirmando voto...`
+    statusText = `⏳ Confirming vote...`
   }
 
   const hasVotedAny = !!confirmedVote || !!pendingVote
@@ -69,7 +69,7 @@ export function VotingView(props: { state: State; network: FashionNetwork; mine?
       >
         {candA && !hasVotedAny && !isMeInThisDuel ? (
           <ActionButton
-            value="VOTAR A"
+            value="VOTE A"
             action={() => {
               if (canVoteA) {
                 n.update({ vote: candA.id, round: s.round, voteDuel: s.duelIndex })
@@ -87,7 +87,7 @@ export function VotingView(props: { state: State; network: FashionNetwork; mine?
 
         {candB && !hasVotedAny && !isMeInThisDuel ? (
           <ActionButton
-            value="VOTAR B"
+            value="VOTE B"
             action={() => {
               if (canVoteB) {
                 n.update({ vote: candB.id, round: s.round, voteDuel: s.duelIndex })

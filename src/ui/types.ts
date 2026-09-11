@@ -1,16 +1,16 @@
 export type UiTab = 'game' | 'shop' | 'rank'
 
-export const PHASE_NAMES_PT: Record<string, string> = {
-  LOBBY: 'SALA DE ESPERA',
-  THEME_REVEAL: 'REVELAÇÃO DO TEMA',
-  PREPARATION: 'PREPARAÇÃO',
-  RUNWAY: 'PASSARELA',
-  VOTING: 'VOTAÇÃO',
-  DUEL_RESULT: 'DUELO ENCERRADO',
-  RESULTS: 'RESULTADOS',
-  RETURN_TO_LOBBY: 'RETORNO AO LOBBY'
+export const PHASE_NAMES_EN: Record<string, string> = {
+  LOBBY: 'LOBBY',
+  THEME_REVEAL: 'THEME REVEAL',
+  PREPARATION: 'PREPARATION',
+  RUNWAY: 'RUNWAY',
+  VOTING: 'VOTING',
+  DUEL_RESULT: 'DUEL RESULT',
+  RESULTS: 'RESULTS',
+  RETURN_TO_LOBBY: 'BACK TO LOBBY'
 }
 
 export function localizePhase(phase: string): string {
-  return PHASE_NAMES_PT[phase] || phase.replace(/_/g, ' ')
+  return PHASE_NAMES_EN[phase] || phase.replace(/_/g, ' ')
 }

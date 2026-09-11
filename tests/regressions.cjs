@@ -139,17 +139,44 @@ test('wardrobe closes at T-1 even for READY player; last accepted outfit stays f
   step(s, m, 0.2, 0)
   assert.equal(s.phase, 'RUNWAY')
 })
-test('all models stay private during preparation and reveal together at runway', () => {
-  const s = initial(),
-    m = [member('p')]
-  until(s, m, (s) => s.phase === 'PREPARATION')
-  assert.ok(s.cast.every((c) => !outfitRevealed(s, c.id)))
-  until(s, m, (s) => s.phase === 'RUNWAY')
-  s.remaining = CONFIG.duelPose
-  assert.equal(outfitRevealed(s, s.duels[0].aId), true)
-  assert.equal(outfitRevealed(s, s.duels[0].bId), true)
-  assert.equal(outfitRevealed(s, s.duels[1].aId), true)
+test('only the active pair reveals after the intro; results reveal everyone', () => {
+  const s = initial(), m = [member('p')]
+  until(s, m, s => s.phase === 'PREPARATION')
+  assert.ok(s.cast.every(c => !outfitRevealed(s, c.id)))
+  until(s, m, s => s.phase === 'RUNWAY')
+  for (let i = 0; i < 3; i++) {
+    s.duelIndex = i; s.phase = 'RUNWAY'; s.remaining = CONFIG.duelPose + 0.01
+    assert.ok(s.cast.every(c => !outfitRevealed(s, c.id)))
+    s.remaining = CONFIG.duelPose
+    for (const phase of ['RUNWAY', 'VOTING', 'DUEL_RESULT']) {
+      s.phase = phase
+      for (const c of s.cast) assert.equal(outfitRevealed(s, c.id), [s.duels[i].aId, s.duels[i].bId].includes(c.id))
+    }
+  }
+  s.phase = 'RESULTS'
+  assert.ok(s.cast.every(c => outfitRevealed(s, c.id)))
+  assert.equal(outfitRevealed(s, 'unknown'), false)
+  s.phase = 'LOBBY'
+  assert.ok(s.cast.every(c => !outfitRevealed(s, c.id)))
 })
+
+test('saved look restores once per round; reopening preserves edits and respects deadline', () => {
+  const ctrl = new UiController(), mine = member('p')
+  const n = { mine, state: { phase: 'PREPARATION', round: 2, remaining: 30, cast: [{ id: 'p' }] }, update: p => Object.assign(mine, p) }
+  ctrl.saveLook({ ...mine.outfit, Top: 3 })
+  ctrl.openWardrobe(n)
+  assert.equal(mine.outfit.Top, 3)
+  mine.outfit.Top = 5
+  ctrl.freeCamera(); ctrl.openWardrobe(n)
+  assert.equal(mine.outfit.Top, 5)
+  n.state.round++; ctrl.openWardrobe(n)
+  assert.equal(mine.outfit.Top, 3)
+  ctrl.freeCamera(); n.state.remaining = 1; ctrl.openWardrobe(n)
+  assert.equal(ctrl.wardrobeOpen, false)
+  n.state.remaining = 30; n.state.cast = []; ctrl.openWardrobe(n)
+  assert.equal(ctrl.wardrobeOpen, false)
+})
+
 test('every reward displayed equals actual points added, including duel wins, for two rounds', () => {
   const s = initial(),
     m = Array.from({ length: 6 }, (_, i) => member('p' + i))

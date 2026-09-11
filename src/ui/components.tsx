@@ -184,7 +184,7 @@ export function TopRightBadge(props: { stylePoints: number; activeTab: string; c
     >
       <TextLabel value={`${stylePoints} SP`} width={100} height="100%" fontSize={15} color={THEME_COLORS.mint} />
       <ActionButton
-        value={activeTab === 'shop' ? 'FECHAR' : 'LOJA'}
+        value={activeTab === 'shop' ? 'CLOSE' : 'SHOP'}
         action={() => controller.setTab(activeTab === 'shop' ? 'game' : 'shop')}
         width={74}
         height={32}
@@ -192,7 +192,7 @@ export function TopRightBadge(props: { stylePoints: number; activeTab: string; c
         active={activeTab === 'shop'}
       />
       <ActionButton
-        value={activeTab === 'rank' ? 'FECHAR' : 'RANK'}
+        value={activeTab === 'rank' ? 'CLOSE' : 'RANK'}
         action={() => controller.setTab(activeTab === 'rank' ? 'game' : 'rank')}
         width={74}
         height={32}

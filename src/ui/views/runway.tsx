@@ -61,7 +61,7 @@ export function RunwayView(props: { state: State; network: FashionNetwork; mine?
         uiBackground={{ color: THEME_COLORS.glassBg }}
       >
         <Label
-          value={`[A] ${candA?.name || 'Duelista A'}   ×   [B] ${candB?.name || 'Duelista B'}`}
+          value={`[A] ${candA?.name || 'Contestant A'}   ×   [B] ${candB?.name || 'Contestant B'}`}
           fontSize={16}
           color={THEME_COLORS.gold}
           textAlign="middle-center"

@@ -1,0 +1,56 @@
+{
+  "capturedAt": "2026-09-11T14:11:31.609Z",
+  "source": "Real Bevy Web local preview, Basic Controller, one controlled visitor and bots; no injected scene states",
+  "images": [
+    {
+      "file": "01-free-camera-lobby.png",
+      "timestamp": "2026-09-11T13:54:53.206Z",
+      "sha256": "159a69ca02c7d1634dbd98f7606412f3c79f2cf89974f0dcdeef2b0852e8d502"
+    },
+    {
+      "file": "02-wardrobe-red-look.png",
+      "timestamp": "2026-09-11T13:55:32.113Z",
+      "sha256": "0ecca6162eb82826ae8db8fff0d346248c71e8cc67a38446959000d7f0487f08"
+    },
+    {
+      "file": "03-reopened-unsaved-green-look.png",
+      "timestamp": "2026-09-11T13:56:12.850Z",
+      "sha256": "798d50bf83324348da22da24ee02b1ef33759945c1408e3948c2519ba206e190"
+    },
+    {
+      "file": "04-runway-free-view.png",
+      "timestamp": "2026-09-11T13:56:48.204Z",
+      "sha256": "66ac67b85984b2ae71345de25ed14b02d421d1211dbf8d8f22e596288f6ca433"
+    },
+    {
+      "file": "05-stage-view.png",
+      "timestamp": "2026-09-11T13:57:03.975Z",
+      "sha256": "dc72830fe80334c475b041ff8509dbbfff2a93cff0f32dca03ae5be3b1166c50"
+    },
+    {
+      "file": "06-voting-stage-view.png",
+      "timestamp": "2026-09-11T13:57:40.609Z",
+      "sha256": "950831462eab4e350e6ad9f1c10b9b524581be504c6aaeb51a16e78727ed52f8"
+    },
+    {
+      "file": "07-runway-neutral-countdown.png",
+      "timestamp": "2026-09-11T13:57:06.286Z",
+      "sha256": "15881bbfceca02619f5366e44e0e0c5c190693daf1e6fff81b941743792cd89c"
+    },
+    {
+      "file": "08-active-pair-revealed.png",
+      "timestamp": "2026-09-11T13:57:08.532Z",
+      "sha256": "a11e9362ee0f0955475ce822b5e3070f1a07aed180eed2a63cea729f3f69b91a"
+    },
+    {
+      "file": "09-saved-red-look-restored.png",
+      "timestamp": "2026-09-11T14:11:03.112Z",
+      "sha256": "af398da378d415aafa4cf36d2685e3ef57bf25b6823fc35586db3feb73906968"
+    },
+    {
+      "file": "10-free-camera-restored.png",
+      "timestamp": "2026-09-11T14:11:31.509Z",
+      "sha256": "fc6d76ccdad9b847f6c5c2ee76b422c10223524f6d67f1973028914a64139fec"
+    }
+  ]
+}

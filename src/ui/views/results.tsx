@@ -24,7 +24,7 @@ export function ResultsView({ state: s, mine: m }: { state: State; mine?: Member
       {s.results.slice(0, 3).map((r, i) => (
         <Label
           key={r.id}
-          value={i + 1 + '. ' + r.name.slice(0, 24) + (narrow ? '\n' : ' / ') + r.votes + ' votos / ' + r.duelWins + 'V'}
+          value={i + 1 + '. ' + r.name.slice(0, 24) + (narrow ? '\n' : ' / ') + r.votes + ' votes / ' + r.duelWins + 'V'}
           color={i === 0 ? THEME_COLORS.gold : THEME_COLORS.cream}
           fontSize={narrow ? 14 : 16}
           uiTransform={{ width: '100%', height: rowHeight, flexShrink: 0 }}
