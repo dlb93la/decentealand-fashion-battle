@@ -1,8 +1,10 @@
-# Fashion Battle — implementation status
+# Fit Check — Decentraland Fashion Battle
+
+Implementation status
 
 Reviewed September 11, 2026 for the same-day delivery. Covers the final reveal, saved-look and camera patch on top of `c368090`. This report distinguishes implementation from validation; it does not claim program acceptance.
 
-Reference: [English GDD 1.1](gdd.md), an explicit delivery-scope revision. The original [Portuguese GDD 1.0](../GDD-TECNICO.md) remains unchanged. Its mandatory scope is §33, optional scope §34 and development phases §37. Revised scope does not erase differences from the original.
+Reference: [English GDD 1.2](gdd.md), an explicit delivery-scope revision. The original [Portuguese GDD 1.0](../GDD-TECNICO.md) remains unchanged. Its mandatory scope is §33, optional scope §34 and development phases §37. Revised scope does not erase differences from the original.
 
 Criteria: [installed Game Design skill](../.agents/skills/game-design/SKILL.md), read in full, from [dcl-regenesislabs/opendcl](https://github.com/dcl-regenesislabs/opendcl/blob/main/skills/game-design/SKILL.md). Installed with `npx skills add https://github.com/dcl-regenesislabs/opendcl --skill game-design`; lockfile hash `e5271d9749855e8790ad243d580947bfac4184872b01174cbaef28f8c76abe38`.
 
@@ -143,8 +145,8 @@ Fresh captures and limitations are indexed in [delivery-validation.md](delivery-
 Requirements: Git, Node.js 22 LTS, npm and internet for dependencies/wearables.
 
 ```sh
-git clone --branch codex/hackathon-mvp https://github.com/dlb93la/decentealand-fashion-battle.git
-cd decentealand-fashion-battle
+git clone --branch codex/hackathon-mvp https://github.com/dlb93la/fit-check-fashion-battle.git
+cd fit-check-fashion-battle
 npm ci
 npm test
 npm run build
@@ -176,3 +178,10 @@ Full alignment with revised promises requires target-device/public-build validat
 - Informational HUD hidden temporarily. World screens retain phase/timer information; stage labels identify contestants. Camera action moved to a reserved bottom-center band.
 - Neutral bodies and hair vary by model slot, independently of the submitted outfit.
 - Bot ballots delayed 2–5 seconds; deterministic tie choice varies by round, duel and voter. Scoring remains a catalog-tag heuristic, not image recognition; external wearables cannot be meaningfully evaluated from catalog tags.
+
+
+### Explorer UI investigation (SDK 7.27.0)
+
+The new high-contrast theme/timer card uses the interactable inset and reserves vertical space above the wardrobe. Explorer-owned map/chat/profile UI renders above scene UI. No supported public SDK API was found to hide the entire Explorer shell. `TouchScreenControls` can hide the mobile joystick, reticle and gamepad buttons, not map/chat; these controls remain available to preserve free exploration. `featureToggles.portableExperiences = hideUi` applies to portable experiences, not the Explorer shell. No DOM/CSS hacks were introduced.
+
+References: [Onscreen UI](https://docs.decentraland.org/creator/scenes-sdk7/2d-ui/onscreen-ui), [UI positioning](https://docs.decentraland.org/creator/scenes-sdk7/2d-ui/ui-positioning), installed `touch_screen_controls.gen.d.ts` and `.agents/skills/build-ui/SKILL.md`.

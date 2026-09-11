@@ -124,12 +124,12 @@ test('bot voting in duels: non-duelist bots cast votes deterministically', () =>
 })
 
 
-test('bot judges wait before voting, then submit within five seconds', () => {
+test('bot judges wait before voting, then submit within three seconds', () => {
   const s = initial(), m = [member('solo')]
   stepUntil(s, m, st => st.phase === 'VOTING')
-  step(s, m, 1, 10000)
+  step(s, m, 0.5, 10000)
   assert.equal(Object.keys(s.ballots).length, 0)
   const eligible = s.cast.filter(c => c.bot && c.id !== s.duels[0].aId && c.id !== s.duels[0].bId)
-  for (let i = 0; i < 4; i++) step(s, m, 1, 11000 + i * 1000)
+  for (let i = 0; i < 3; i++) step(s, m, 1, 11000 + i * 1000)
   assert.ok(s.phase !== 'VOTING' || eligible.every(c => s.ballots[c.id]))
 })

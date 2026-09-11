@@ -1,0 +1,56 @@
+[
+  {
+    "file": "01-lobby.png",
+    "sourceFrame": 175,
+    "capturedAtUnixMs": 1789097195147,
+    "sha256": "194e0a3670a6ac4807ecce09215002975ebc0e948812ad372f0f1908b2a95870"
+  },
+  {
+    "file": "02-theme-reveal.png",
+    "sourceFrame": 0,
+    "capturedAtUnixMs": 1789096975793,
+    "sha256": "bbe1e6faf923a469affeadd9bd6b915ba46a1998239a0d609fd8fa673ce009a9"
+  },
+  {
+    "file": "03-preparacao-timer.png",
+    "sourceFrame": 8,
+    "capturedAtUnixMs": 1789096984148,
+    "sha256": "5eb44ff5408452363a46a8c436fda876b806ff8d9465b634246d4552f31ba152"
+  },
+  {
+    "file": "04-guarda-roupa.png",
+    "sourceFrame": 45,
+    "capturedAtUnixMs": 1789097036572,
+    "sha256": "837204b702d03c972a48c60b9dda7cd47a469cc092540853c39d45c31d4894bf"
+  },
+  {
+    "file": "05-runway-intro-ja-revelado.png",
+    "sourceFrame": 76,
+    "capturedAtUnixMs": 1789097068363,
+    "sha256": "094714a542ecb9e955dc2c952e565b21c48b1053f195fbf8930666174a2ae423"
+  },
+  {
+    "file": "06-runway-pose.png",
+    "sourceFrame": 88,
+    "capturedAtUnixMs": 1789097087461,
+    "sha256": "fbcfd447accff93504db44d428c2bddcc483b3300c5285a0b5a8b902421673a3"
+  },
+  {
+    "file": "07-votacao.png",
+    "sourceFrame": 120,
+    "capturedAtUnixMs": 1789097120892,
+    "sha256": "63c46849365f97a3c0fe2b8c5993248ddef6499f95c3eb6a0d236b6fda57b039"
+  },
+  {
+    "file": "08-resultados-style-points.png",
+    "sourceFrame": 168,
+    "capturedAtUnixMs": 1789097178863,
+    "sha256": "a53dd80cb69c8e89d03f70acf62440492b8d8bb61926734545088b1c835f9aac"
+  },
+  {
+    "file": "09-proxima-rodada.png",
+    "sourceFrame": 188,
+    "capturedAtUnixMs": 1789097208741,
+    "sha256": "5571414efaad7d909f5c2a6be411c72644eb1527e376082757cb3de205c33e02"
+  }
+]

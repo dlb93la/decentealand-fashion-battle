@@ -26,21 +26,21 @@ export function PreparationView({ state: s, network: n, mine: m, controller: ctr
   return <UiEntity uiTransform={{ positionType: 'absolute', position: { left: 12, bottom: ctrl.wardrobeOpen ? 80 : 12 },
     width, height: ctrl.wardrobeOpen ? height : rowHeight + 16, padding: 8, flexDirection: 'column' }}
     uiBackground={{ color: THEME_COLORS.glassBg }}>
-    {ctrl.wardrobeOpen ? <UiEntity uiTransform={{ width: '100%', height: height - rowHeight - 24, flexDirection: 'column' }}>
-      <UiEntity uiTransform={{ width: '100%', height: rowHeight * 2, flexDirection: 'row', flexWrap: 'wrap' }}>
-        {wardrobeGroups.map((g, i) => <ActionButton key={g.name} value={g.name} width={(width - 16) / 4 - 8}
-          height={rowHeight - 8} fontSize={13} active={group === g} action={() => chooseGroup(i)} />)}
+    {ctrl.wardrobeOpen ? <UiEntity uiTransform={{ width: '100%', height: height - rowHeight - 24, flexDirection: 'column', overflow: 'scroll' }}>
+      <UiEntity uiTransform={{ width: '100%', height: rowHeight * 2, flexDirection: 'row', flexWrap: 'wrap', flexShrink: 0 }}>
+        {wardrobeGroups.map((g, i) => <ActionButton key={g.name} variant="category" value={g.name} width={(width - 16) / 4 - 8}
+          height={rowHeight - 8} fontSize={14} active={group === g} action={() => chooseGroup(i)} />)}
       </UiEntity>
-      <UiEntity uiTransform={{ width: '100%', height: rowHeight, flexDirection: 'row' }}>
-        {types.map(type => <ActionButton key={type} value={type} width={(width - 16) / types.length - 8}
-          height={rowHeight - 8} fontSize={12} active={filter === type}
+      <UiEntity uiTransform={{ width: '100%', height: rowHeight, flexDirection: 'row', flexShrink: 0 }}>
+        {types.map(type => <ActionButton key={type} variant="filter" value={type} width={(width - 16) / types.length - 8}
+          height={rowHeight - 8} fontSize={14} active={filter === type}
           action={() => { ctrl.wardrobeFilter = type; ctrl.wardrobePage = 0 }} />)}
       </UiEntity>
-      <UiEntity uiTransform={{ width: '100%', height: Math.ceil(pageSize / 2) * (itemHeight + 8), flexDirection: 'row', flexWrap: 'wrap' }}>
+      <UiEntity uiTransform={{ width: '100%', height: Math.ceil(pageSize / 2) * (itemHeight + 12), flexDirection: 'row', flexWrap: 'wrap', flexShrink: 0 }}>
         {items.slice(page * pageSize, (page + 1) * pageSize).map(item => {
           const unavailable = item.slot === 'Effects' && item.index === 1 && !ownsSparkles
-          return <ActionButton key={item.slot + item.index} value={unavailable ? 'Sparkles — in shop' : item.name}
-            width={(width - 16) / 2 - 8} height={itemHeight} fontSize={13}
+          return <ActionButton key={item.slot + item.index} variant="item" value={unavailable ? 'Sparkles — in shop' : item.name}
+            width={(width - 16) / 2 - 12} height={itemHeight} fontSize={15}
             thumbnail={wearableThumbnail(item.slot, item.index)}
             borderColor={item.slot === 'Head' ? Color4.fromHexString(item.color) : undefined}
             active={!m?.outfit.customWearables?.length && (m?.outfit[item.slot] ?? 0) === item.index}
@@ -52,7 +52,7 @@ export function PreparationView({ state: s, network: n, mine: m, controller: ctr
             }} />
         })}
       </UiEntity>
-      <UiEntity uiTransform={{ width: '100%', height: rowHeight, flexDirection: 'row', justifyContent: 'space-between' }}>
+      <UiEntity uiTransform={{ width: '100%', height: rowHeight, flexDirection: 'row', flexShrink: 0, justifyContent: 'space-between' }}>
         <ActionButton value="Previous" width="30%" height={rowHeight - 8} fontSize={13} disabled={page === 0}
           action={() => { ctrl.wardrobePage = page - 1 }} />
         <Label value={`${page + 1} / ${pages}`} fontSize={14} uiTransform={{ width: '28%', height: rowHeight }} />
@@ -60,7 +60,7 @@ export function PreparationView({ state: s, network: n, mine: m, controller: ctr
           action={() => { ctrl.wardrobePage = page + 1 }} />
       </UiEntity>
     </UiEntity> : null}
-    <UiEntity uiTransform={{ width: '100%', height: rowHeight, flexDirection: 'row' }}>
+    <UiEntity uiTransform={{ width: '100%', height: rowHeight, flexDirection: 'row', flexShrink: 0 }}>
       <ActionButton value={ctrl.wardrobeOpen ? 'SAVE' : 'DRESS'} width="48%" height={rowHeight - 8} fontSize={17}
         disabled={locked} action={() => { if (ctrl.wardrobeOpen && m) ctrl.saveLook(m.outfit); else ctrl.openWardrobe(n) }} />
       <ActionButton value="READY" width="48%" height={rowHeight - 8} fontSize={17}

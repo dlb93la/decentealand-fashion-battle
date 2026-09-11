@@ -1,4 +1,4 @@
-# Decentealand Fashion Battle
+# Fit Check — Decentraland Fashion Battle
 
 **Dress. Pose. Vote. Win. Repeat.** Standalone Decentraland SDK7 fashion competition for the Friendzone mobile buildathon.
 
@@ -7,8 +7,8 @@
 Install Git and Node.js 22 LTS (includes npm). Clone and run:
 
 ```sh
-git clone https://github.com/dlb93la/decentealand-fashion-battle.git
-cd decentealand-fashion-battle
+git clone https://github.com/dlb93la/fit-check-fashion-battle.git
+cd fit-check-fashion-battle
 npm ci
 npm test
 npm run build

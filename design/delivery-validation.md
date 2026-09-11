@@ -42,8 +42,8 @@ The previous root-level screenshots and `gameplay-preview.mp4` remain **historic
 ## Continue on another computer
 
 ```sh
-git clone --branch codex/hackathon-mvp https://github.com/dlb93la/decentealand-fashion-battle.git
-cd decentealand-fashion-battle
+git clone --branch codex/hackathon-mvp https://github.com/dlb93la/fit-check-fashion-battle.git
+cd fit-check-fashion-battle
 npm ci
 npm test
 npm run build

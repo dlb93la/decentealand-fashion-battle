@@ -36,7 +36,7 @@ const NEON_GOLD = '#FFC857'
 const NEON_MINT = '#C6F4B0'
 const IVORY = '#F3EFE8'
 
-const ambientSurfaces: { entity: Entity; color: string }[] = []
+const ambientSurfaces: { entity: Entity; color: string; basic: boolean; roughness: number; metallic: number }[] = []
 
 function paint(
   e: Entity,
@@ -49,9 +49,11 @@ function paint(
 ) {
   const color = Color4.fromHexString(hex)
   color.a = alpha
+  const basic = hex === CLUB_BLACK || hex === '#FFF0DA'
+  if (!glow && (basic || [CLUB_FLOOR, HOF_FLOOR, CLUB_RUNWAY].includes(hex)))
+    ambientSurfaces.push({ entity: e, color: hex, basic, roughness, metallic })
   // Indoor PBR shadows desaturate broad walls; keep the architectural palette stable.
   if (hex === CLUB_BLACK || hex === '#FFF0DA') {
-    ambientSurfaces.push({ entity: e, color: hex })
     Material.setBasicMaterial(e, { diffuseColor: color, castShadows: false })
     return
   }
@@ -200,6 +202,11 @@ export class AvatarFigure {
     for (const sparkle of this.sparkles) Transform.getMutable(sparkle).parent = this.root
     engine.removeEntity(oldRoot)
     if (avatar) AvatarShape.create(this.root, avatar)
+    // Rebind the skeleton attachment after replacing the NPC entity.
+    if (this.backAnchor) {
+      AvatarAttach.deleteFrom(this.backAnchor)
+      AvatarAttach.create(this.backAnchor, { avatarId: this.id, anchorPointId: AvatarAnchorPointType.AAPT_SPINE2 })
+    }
   }
 
   effect(enabled: boolean, time: number) {
@@ -305,18 +312,33 @@ export class FashionWorld {
   previewRight: AvatarFigure
   champion: AvatarFigure
   private ambientLights: { entity: Entity; intensity: number }[] = []
+  private stageLights: Entity[] = []
   private lightingMode?: 'day' | 'night'
   setLighting(mode: 'day' | 'night') {
     if (this.lightingMode === mode) return
     this.lightingMode = mode
     SkyboxTime.createOrReplace(engine.RootEntity, { fixedTime: mode === 'day' ? 43200 : 0 })
-    for (const light of this.ambientLights) LightSource.getMutable(light.entity).intensity = light.intensity * (mode === 'day' ? 1 : 0.25)
-    // Unlit architecture needs matching exposure; stage lamps and sign contrast stay readable.
+    for (const light of this.ambientLights) LightSource.getMutable(light.entity).intensity = mode === 'day' ? light.intensity : 0
+    for (const entity of this.stageLights) {
+      const light = LightSource.getMutable(entity)
+      light.intensity = mode === 'day' ? 3500 : 12000
+      light.range = 16
+      light.shadow = mode === 'night'
+    }
+    // Night architecture receives local lights instead of staying unlit.
     for (const surface of ambientSurfaces) {
       const c = Color4.fromHexString(surface.color)
-      const exposure = mode === 'day' ? 1 : 0.3
-      Material.setBasicMaterial(surface.entity, { diffuseColor: { r: c.r * exposure, g: c.g * exposure, b: c.b * exposure, a: c.a }, castShadows: false })
+      if (mode === 'day' && surface.basic) Material.setBasicMaterial(surface.entity, { diffuseColor: c, castShadows: false })
+      else {
+        const exposure = mode === 'day' ? 1 : 0.14
+        Material.setPbrMaterial(surface.entity, {
+          albedoColor: { r: c.r * exposure, g: c.g * exposure, b: c.b * exposure, a: c.a },
+          roughness: surface.roughness, metallic: surface.metallic
+        })
+      }
     }
+    for (const entity of this.names) TextShape.getMutable(entity).textColor = Color4.fromHexString(mode === 'day' ? '#47203D' : '#FFF7EC')
+
   }
   voteLight: Entity
   voteMarker: Entity
@@ -374,7 +396,8 @@ export class FashionWorld {
     box(10.0, 2.5, 0.15, 0.1, 5.0, 0.1, NEON_GOLD, undefined, false, true, 0.1, 0.1, 1.2)
     box(14.0, 2.5, 0.15, 0.1, 5.0, 0.1, NEON_GOLD, undefined, false, true, 0.1, 0.1, 1.2)
     box(12.0, 5.0, 0.15, 4.2, 0.1, 0.1, NEON_GOLD, undefined, false, true, 0.1, 0.1, 1.2)
-    label('FASHION BATTLE', 12.0, 5.4, 0.3, 1.8, NEON_GOLD)
+    label('FIT CHECK', 12.0, 5.4, 0.3, 2.4, NEON_GOLD)
+    label('Decentraland Fashion Battle', 12.0, 4.95, 0.3, 1.0, IVORY)
 
     // ==========================================
     // 2. ISOLATED HALL OF FAME ANNEX (DIVIDING WALL & VIP PORTAL)
@@ -466,8 +489,8 @@ export class FashionWorld {
     screenText('Work in Progress', 0, 0.22, -0.2, 2.6, '#FFFFFF', hallNotice)
     screenText('HALL OF FAME / COMING LATER', 0, -0.3, -0.2, 1.2, NEON_GOLD, hallNotice)
     screen(12, 5.1, 30.7, 10.2, 3.2, NEON_GOLD)
-    screenText('FASHION BATTLE', 12, 5.95, 30.5, 8, '#FFFFFF')
-    screenText('DRESS  /  POSE  /  VOTE', 12, 5.12, 30.5, 3.6, NEON_MINT)
+    screenText('FIT CHECK', 12, 5.95, 30.5, 8, '#FFFFFF')
+    screenText('Decentraland Fashion Battle', 12, 5.12, 30.5, 3.6, NEON_MINT)
     this.themeBanner = screenText('YOUR NEXT GREAT LOOK', 12, 4.3, 30.5, 4, '#FFD676')
     // Two side-wall-style broadcast displays flanking the stage, readable from the audience.
     for (const x of [3.7, 20.3]) {
@@ -688,6 +711,7 @@ export class FashionWorld {
     Transform.create(this.privacyArea, { position: { x: 12, y: 5, z: 12 } })
 
     // Local-only feedback: never sync these entities or expose another player's ballot.
+    this.stageLights = [spotA, spotB]
     this.ambientLights = [{ entity: fillMain1, intensity: 4000 }, { entity: fillMain2, intensity: 4000 }, { entity: galleryFill, intensity: 4500 }]
     this.voteLight = engine.addEntity()
     Transform.create(this.voteLight, {

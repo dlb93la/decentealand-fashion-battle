@@ -197,6 +197,9 @@ test('back accessories attach to each local model, hide before reveal and reuse 
   s.phase = 'RESULTS'
   world.update(s, outfit, 0, 0.2)
   assert.equal(world.figures[0].backParts.length, 3)
+  const backAnchor = world.figures[0].backAnchor
+  world.figures[0].place(10, 0.5, 12)
+  assert.equal(ecs.AvatarAttach.get(backAnchor).avatarId, world.figures[0].id)
   outfit.Back = 3
   world.update(s, outfit, 0, 0.2)
   assert.equal(world.figures[0].backParts.length, 3)

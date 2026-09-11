@@ -52,6 +52,7 @@ export function ActionButton(props: {
   borderColor?: Color4
   textColor?: Color4
   thumbnail?: string
+  variant?: 'category' | 'filter' | 'item'
 }) {
   const {
     value,
@@ -67,21 +68,23 @@ export function ActionButton(props: {
 
   const border =
     borderColor || (disabled ? THEME_COLORS.disabledBorder : active ? THEME_COLORS.mint : THEME_COLORS.pink)
-  const bg = active ? THEME_COLORS.activeBg : THEME_COLORS.glassBg
-  const fontColor = textColor || (disabled ? THEME_COLORS.disabledText : THEME_COLORS.cream)
+  const light = props.variant === 'category' || props.variant === 'filter'
+  const bg = active ? THEME_COLORS.activeBg : props.variant === 'category' ? THEME_COLORS.gold : props.variant === 'filter' ? THEME_COLORS.cream : THEME_COLORS.glassBg
+  const fontColor = textColor || (disabled ? THEME_COLORS.disabledText : light && !active ? THEME_COLORS.ink : THEME_COLORS.cream)
 
   return (
     <UiEntity
       uiTransform={{
         width: width as any,
         height: height as any,
-        margin: 4,
+        margin: props.variant === 'item' ? 6 : 4,
+        padding: props.variant === 'item' ? 4 : 0,
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'center',
         flexShrink: 0,
-        borderWidth: 1,
-        borderColor: border,
+        borderWidth: props.variant ? 2 : 1,
+        borderColor: active ? THEME_COLORS.mint : border,
         pointerFilter: disabled ? 'none' : undefined
       }}
       uiBackground={{ color: bg }}
@@ -112,7 +115,7 @@ export function HeaderPill(props: { state: State; memberCount: number }) {
   const seconds = (remainingSec % 60).toString().padStart(2, '0')
   const timer = `${minutes}:${seconds}`
 
-  const themeTitle = s.phase === 'LOBBY' ? 'FASHION BATTLE' : THEMES[s.theme].title.toUpperCase()
+  const themeTitle = s.phase === 'LOBBY' ? 'FIT CHECK' : THEMES[s.theme].title.toUpperCase()
   const localizedPhase = localizePhase(s.phase)
   const dressing = s.phase === 'PREPARATION'
   const pillWidth = dressing ? Math.min(330, UI_DIMENSIONS.headerPillWidth * 0.7) : UI_DIMENSIONS.headerPillWidth

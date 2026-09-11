@@ -1,6 +1,6 @@
-# Decentealand Fashion Battle — Game Design Document
+# Fit Check — Decentraland Fashion Battle — Game Design Document
 
-Version 1.1 — submission scope, September 11, 2026. Platform: Decentraland SDK7, with mobile as the target experience.
+Version 1.2 — submission scope, September 11, 2026. Platform: Decentraland SDK7, with mobile as the target experience.
 
 This English edition supersedes the original Portuguese 1.0 draft for this delivery. The original remains in [GDD-TECNICO.md](../GDD-TECNICO.md) for traceability. This is an explicit scope revision, not a claim that every feature in the original draft has been implemented. See [implementation-status.md](implementation-status.md) for evidence and remaining gaps.
 
@@ -16,17 +16,17 @@ Lobby → theme reveal → preparation → three runway duels and votes → fina
 
 | Stage | Duration | Player experience |
 |---|---:|---|
-| Lobby | 15 s | Explore and wait for the next selection. A round requires human presence. |
+| Lobby | 10 s | Explore and wait for the next selection. A round requires human presence. |
 | Theme reveal | 4 s | Read the theme and its description. |
-| Preparation | 90 s | Open DRESS, choose clothing, SAVE the preferred look, and mark READY. |
-| Duel intro | 3 s per duel | Both contestants wear neutral outfits during the countdown. |
-| Runway poses | 20 s per duel | Only the active pair reveals and performs; backstage stays neutral. |
-| Voting | Up to 10 s per duel | Eligible audience members vote A or B. All required votes can end this phase early. |
-| Duel result | 6 s per duel | Display the winner and vote totals. |
-| Final results | 15 s | Show Top 3 and the local player's earned Style Points. |
+| Preparation | 40 s | Open DRESS, choose clothing, SAVE the preferred look, and mark READY. |
+| Duel intro | 2 s per duel | Both contestants wear neutral outfits during the countdown. |
+| Runway poses | 10 s per duel | Only the active pair reveals and performs; backstage stays neutral. |
+| Voting | Up to 5 s per duel | Eligible audience members vote A or B. All required votes can end this phase early. |
+| Duel result | 3 s per duel | Display the winner and vote totals. |
+| Final results | 6 s | Show Top 3 and the local player's earned Style Points. |
 | Return | 3 s | Continue automatically to the next lobby. |
 
-Maximum nominal cycle: 244 seconds. Timings are deliberately unchanged for this delivery. READY does not shorten preparation. The wardrobe closes at the last second; the last accepted look remains locked for the round. The installed Game Design skill recommends a core loop below 60 seconds; this round does not meet that recommendation. Timing evaluation is deferred, not presented as resolved.
+Maximum nominal cycle: 123 seconds (three duels), reduced from 244 seconds. READY does not shorten preparation. The wardrobe closes at the last second; the last accepted look remains locked for the round. The Game Design skill's below-60-second recommendation remains unmet for a complete six-contestant round. Each individual duel takes at most 20 seconds.
 
 ## Participants and social interaction
 
@@ -48,7 +48,7 @@ The old Backpack/Back selector and location shortcut menu are outside this revis
 
 ## Reveal and camera freedom
 
-Theme reveal and preparation keep contestant models neutral. During each runway intro, the active pair is still neutral. After the three-second countdown, only that pair reveals. Inactive contestants remain neutral during runway, voting and duel results. Final results reveal the cast.
+Theme reveal and preparation keep contestant models neutral. During each runway intro, the active pair is still neutral. After the two-second countdown, only that pair reveals. Inactive contestants remain neutral during runway, voting and duel results. Final results reveal the cast.
 
 This is visual concealment on scene models, not cryptographic secrecy. Outfit data is synchronized to clients, and visitors' own Explorer avatars outside the privacy volume are not hidden by a global rule. Remote wearable loading can affect the visible reveal timing.
 
@@ -117,8 +117,8 @@ These are not completed features or guarantees of program acceptance. Current de
 ## Running the prototype
 
 ```sh
-git clone --branch codex/hackathon-mvp https://github.com/dlb93la/decentealand-fashion-battle.git
-cd decentealand-fashion-battle
+git clone --branch codex/hackathon-mvp https://github.com/dlb93la/fit-check-fashion-battle.git
+cd fit-check-fashion-battle
 npm ci
 npm test
 npm run build

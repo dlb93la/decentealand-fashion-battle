@@ -1,6 +1,7 @@
 import ReactEcs from '@dcl/sdk/react-ecs'
 import { UiEntity, Label } from './primitives'
 import { FashionNetwork } from '../network'
+import { THEMES } from '../data'
 import { THEME_COLORS, UI_DIMENSIONS, panelWidth } from './theme'
 import { UiController, uiController } from './controller'
 import { TopRightBadge, ActionButton } from './components'
@@ -88,7 +89,24 @@ export function renderUi(n: FashionNetwork, controller: UiController = uiControl
         pointerFilter: 'none'
       }}
     >
-      {/* Informational HUD temporarily hidden; world displays carry phase and time. */}
+      {activeTab === 'game' && ['THEME_REVEAL', 'PREPARATION', 'RUNWAY', 'VOTING'].includes(s.phase) ?
+        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 12, left: panelWidth(2000) < 800 ? 92 : 12 },
+          width: Math.max(180, Math.min(540, panelWidth(2000) - (panelWidth(2000) < 800 ? 270 : 190))), height: 96, flexDirection: 'row',
+          padding: 8, borderWidth: 2, borderColor: THEME_COLORS.gold, pointerFilter: 'none' }}
+          uiBackground={{ color: THEME_COLORS.overlayBg }}>
+          <UiEntity uiTransform={{ width: '75%', height: 76, flexDirection: 'column' }}>
+            <Label value="FIT CHECK / CURRENT THEME" color={THEME_COLORS.mint} fontSize={14}
+              uiTransform={{ width: '100%', height: 20 }} />
+            <Label value={THEMES[s.theme].title.toUpperCase()} color={THEME_COLORS.cream} fontSize={21}
+              uiTransform={{ width: '100%', height: 56 }} />
+          </UiEntity>
+          <UiEntity uiTransform={{ width: '25%', height: 76, flexDirection: 'column' }}>
+            <Label value={s.phase === 'PREPARATION' ? 'DRESS' : s.phase === 'RUNWAY' ? 'RUNWAY' : s.phase === 'VOTING' ? 'VOTE' : 'THEME'}
+              color={THEME_COLORS.gold} fontSize={14} uiTransform={{ width: '100%', height: 22 }} />
+            <Label value={`${Math.ceil(s.remaining)}s`} fontSize={32} color={s.remaining <= 5 ? THEME_COLORS.pink : THEME_COLORS.gold}
+              uiTransform={{ width: '100%', height: 54 }} />
+          </UiEntity>
+        </UiEntity> : null}
       <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 12, right: 12 } }}>
         <ActionButton value={controller.lighting === 'day' ? 'LIGHTING: DAY' : 'LIGHTING: NIGHT'}
           width={170} height={44} fontSize={14}
