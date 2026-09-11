@@ -21,6 +21,7 @@ export class UiController {
   wardrobeFilter = ''
   lockedRound = -1
   savedLook?: Outfit
+  lighting: 'day' | 'night' = 'day'
   watchStage = false
   private openedRound = -1
 

@@ -25,6 +25,7 @@ function fixture() {
     'Billboard',
     'AvatarModifierArea',
     'LightSource',
+    'SkyboxTime',
     'AudioSource',
     'Material',
     'MeshRenderer',
@@ -313,4 +314,28 @@ test('music fades out before effects and returns smoothly without restarting its
   for (let i = 0; i < 90; i++) tick()
   assert.ok(music.volume > 0.2)
   assert.equal(ecs.AudioSource.calls.length, 1)
+})
+
+
+test('local day/night toggle dims ambient light, preserves geometry and restores day', () => {
+  const { world, ecs } = fixture()
+  const transforms = structuredClone([...ecs.Transform.data])
+  world.setLighting('day')
+  const day = [...ecs.LightSource.data].map(([e, l]) => [e, l.intensity])
+  world.setLighting('night')
+  assert.equal(ecs.SkyboxTime.get(ecs.engine.RootEntity).fixedTime, 0)
+  assert.ok(day.some(([e, intensity]) => ecs.LightSource.get(e).intensity < intensity))
+  assert.deepEqual([...ecs.Transform.data], transforms)
+  world.setLighting('day')
+  assert.deepEqual([...ecs.LightSource.data].map(([e, l]) => [e, l.intensity]), day)
+})
+
+test('neutral cast varies bodies and hair independently of hidden outfits', () => {
+  const { world, ecs, s, outfit } = fixture()
+  s.phase = 'PREPARATION'; s.remaining = 20
+  s.cast = Array.from({ length: 6 }, (_, i) => ({ id: `p${i}`, name: `P${i}`, bot: true, outfit, pose: 0 }))
+  world.update(s, outfit, 0, 0.1, [], 'local')
+  const avatars = world.figures.map(f => ecs.AvatarShape.get(f.root))
+  assert.equal(new Set(avatars.map(a => a.bodyShape)).size, 2)
+  assert.ok(new Set(avatars.map(a => a.wearables.at(-1))).size >= 3)
 })

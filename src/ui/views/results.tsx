@@ -12,7 +12,7 @@ export function ResultsView({ state: s, mine: m }: { state: State; mine?: Member
     <UiEntity
       uiTransform={{
         positionType: 'absolute',
-        position: { bottom: 24, left: '50%' },
+        position: { bottom: 88, left: '50%' },
         margin: { left: -width / 2 },
         width,
         height: rowHeight * Math.min(3, s.results.length) + 58,

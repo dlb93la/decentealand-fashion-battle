@@ -37,7 +37,7 @@ export function VotingView(props: { state: State; network: FashionNetwork; mine?
     <UiEntity
       uiTransform={{
         positionType: 'absolute',
-        position: { bottom: 32, left: '50%' },
+        position: { bottom: 88, left: '50%' },
         margin: { left: -width / 2 },
         width,
         height: 110,

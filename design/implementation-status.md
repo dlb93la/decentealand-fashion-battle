@@ -167,3 +167,12 @@ These are user-supplied criteria, not an audit of the current official applicati
 | Scope | Six contestants/three duels and revised GDD. | Physical mobile, peak budget, trust/storage roadmap and signed public deployment. |
 
 Full alignment with revised promises requires target-device/public-build validation. Every original future/example feature would additionally require backend, persistence, global ranking, entrances and effects. Revising scope does not implement them. Timing and broader testing were deliberately deferred. Original participant-count/finalist-SP detail, text legibility and pose naming remain polish gaps.
+
+
+### September 11 final playtest changes
+
+- Hall of Fame: partial visual prototype; full historical gallery deferred, with a Work in Progress entrance sign (see GDD delivery scope update).
+- Local lighting preference: Day/Night uses SDK SkyboxTime, reduced ambient fill and matching exposure for unlit architecture. Stage lighting and sign contrast remain readable. Geometry and network state are unchanged; preference lasts for this client session.
+- Informational HUD hidden temporarily. World screens retain phase/timer information; stage labels identify contestants. Camera action moved to a reserved bottom-center band.
+- Neutral bodies and hair vary by model slot, independently of the submitted outfit.
+- Bot ballots delayed 2–5 seconds; deterministic tie choice varies by round, duel and voter. Scoring remains a catalog-tag heuristic, not image recognition; external wearables cannot be meaningfully evaluated from catalog tags.

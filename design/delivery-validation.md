@@ -53,3 +53,10 @@ npm start
 For an existing clone, use `git pull --ff-only` before editing. Use Node.js 22 LTS. The preview URL on a different computer must use that computer's server; the current localhost address is not transferable. The saved outfit exists only in the running client session and does not migrate via Git.
 
 GitHub publication transfers source and documentation. The configured World `leined.eth` still needs an authorized deployment signature for the updated game to become publicly playable there. This pass did not sign or deploy the World, access another physical computer, or validate the deferred mobile/multiplayer matrix.
+
+
+## Final adjustments — September 11, 2026
+
+Build and TypeScript validation completed without errors; 60 automated tests passed. New coverage verifies neutral body/hair variety without outfit disclosure, local lighting restoration without geometry changes, and delayed bot ballots. The preview server reports healthy on port 8010.
+
+Desktop preview checks: decorative wall strips removed; neutral cast visibly varied; Day/Night toggles change architectural brightness; the wardrobe leaves a separate bottom camera band; Watch Stage enters the stage view and Free Camera releases it; pose and duel-result controls remain above the camera button. Captures are in `screenshots/final-adjustments/`. The full Hall remains deferred and is marked Work in Progress in the scene and GDD. Mobile device and multi-device network testing were not repeated for this patch.

@@ -126,3 +126,10 @@ npm start
 ```
 
 Use Node.js 22 LTS and internet access for dependencies and wearable assets. `npm start` serves port 8010 and opens Bevy Web. For mobile preview use `npm run start:mobile` and the CLI QR on the same LAN; if it selects a VPN address, substitute the computer's LAN IP. The server health route is `/about`; `/` is not the playable application.
+
+
+## Delivery scope update — Hall of Fame (September 11, 2026)
+
+The complete Hall of Fame is deferred until after the MVP delivery. Its entrance is marked **Work in Progress**. The current room and session champion display are a visual prototype, not a persistent historical gallery. Future work includes durable winner records, curated historical outfits, browsing previous champions and a production persistence service. Do not count this prototype as completed long-term retention.
+
+Players can select local Day or Night lighting without changing scene objects or affecting other players. The informational overlay is temporarily hidden for playtesting; world screens show phase and time. Watch Stage / Free Camera remains opt-in at the bottom center, separate from voting and outfit controls. Neutral contestants use varied body shapes and hairstyles unrelated to their hidden outfits. Bot judges vote after a short staggered delay; score ties no longer always favor slot A.

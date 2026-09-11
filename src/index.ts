@@ -25,6 +25,7 @@ export function main() {
     uiController.tick(network)
     presentation.tick(network, uiController.wardrobeOpen, uiController.watchStage)
 
+    world.setLighting(uiController.lighting)
     world.update(
       network.state,
       network.mine?.outfit || inventory.initial(),

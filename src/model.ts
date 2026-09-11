@@ -362,13 +362,18 @@ export function step(s: State, members: Member[], dt: number, now: number) {
     if (duel) {
       for (const bot of s.cast.filter((c) => c.bot && c.id !== duel.aId && c.id !== duel.bId)) {
         if (s.ballots[bot.id]) continue
+        // Stagger judges across 2–5 seconds instead of instant unanimous voting.
+        const delay = 2 + hash(`${s.round}:${s.duelIndex}:${bot.id}:delay`) % 4
+        if (s.remaining > CONFIG.duelVoting - delay) continue
         const candA = s.cast.find((c) => c.id === duel.aId)!
         const candB = s.cast.find((c) => c.id === duel.bId)!
 
         const scoreA = botLookScore(candA.outfit, THEMES[s.theme], bot.id, `${s.round}:${bot.id}:${candA.id}`)
         const scoreB = botLookScore(candB.outfit, THEMES[s.theme], bot.id, `${s.round}:${bot.id}:${candB.id}`)
 
-        const chosen = scoreA >= scoreB ? candA.id : candB.id
+        const chosen = scoreA === scoreB
+          ? (hash(`${s.round}:${s.duelIndex}:${bot.id}:tie`) % 2 ? candA.id : candB.id)
+          : scoreA > scoreB ? candA.id : candB.id
         vote(s, bot.id, chosen, s.round)
       }
     } else {

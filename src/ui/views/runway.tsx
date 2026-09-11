@@ -42,7 +42,7 @@ export function RunwayView(props: { state: State; network: FashionNetwork; mine?
         />
       </UiEntity>
     )
-  // The shared A/B header already identifies both contestants for spectators.
+  // World labels identify both contestants for spectators.
   if (!isMeInDuel) return <UiEntity />
 
   // Active duelist view: floating pose selector
@@ -50,7 +50,7 @@ export function RunwayView(props: { state: State; network: FashionNetwork; mine?
     <UiEntity
       uiTransform={{
         positionType: 'absolute',
-        position: { bottom: 32, left: '50%' },
+        position: { bottom: 88, left: '50%' },
         margin: { left: -width / 2 },
         width,
         height: poseGridHeight + 38,

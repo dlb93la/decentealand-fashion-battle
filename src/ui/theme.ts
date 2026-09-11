@@ -45,7 +45,7 @@ export function wardrobeLayout() {
   const w = (c?.width || 1280) - (inset?.left || 0) - (inset?.right || 0)
   const h = (c?.height || 720) - (inset?.top || 0) - (inset?.bottom || 0)
   const width = Math.min(600, Math.max(280, w * 0.49 - 24))
-  const available = h - 24
+  const available = h - 92
   const rowHeight = available < 390 ? 44 : 52
   const itemHeight = available < 390 ? 62 : 86
   const pageSize = available >= 5 * rowHeight + 2 * (itemHeight + 8) + 24 ? 4 : 2

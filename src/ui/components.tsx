@@ -182,7 +182,7 @@ export function TopRightBadge(props: { stylePoints: number; activeTab: string; c
       }}
       uiBackground={{ color: THEME_COLORS.glassBg }}
     >
-      <TextLabel value={`${stylePoints} SP`} width={100} height="100%" fontSize={15} color={THEME_COLORS.mint} />
+      {/* Balance overlay hidden during the world-information playtest. */}
       <ActionButton
         value={activeTab === 'shop' ? 'CLOSE' : 'SHOP'}
         action={() => controller.setTab(activeTab === 'shop' ? 'game' : 'shop')}

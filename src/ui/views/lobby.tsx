@@ -35,36 +35,5 @@ export function LobbyView(props: { state: State; isConnecting: boolean }) {
     )
   }
 
-  const text =
-    s.phase === 'THEME_REVEAL'
-      ? THEMES[s.theme].description
-      : s.phase === 'RETURN_TO_LOBBY'
-        ? 'Next round starting soon'
-        : 'Dress. Pose. Vote.'
-
-  return (
-    <UiEntity
-      uiTransform={{
-        positionType: 'absolute',
-        position: { bottom: 32, left: '50%' },
-        margin: { left: -panelWidth(520) / 2 },
-        width: panelWidth(520),
-        height: 44,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
-        borderColor: THEME_COLORS.glassBorder
-      }}
-      uiBackground={{ color: THEME_COLORS.glassBg }}
-    >
-      <Label
-        value={text}
-        fontSize={14}
-        color={THEME_COLORS.gold}
-        textAlign="middle-center"
-        uiTransform={{ width: '100%', height: '100%', pointerFilter: 'none' }}
-      />
-    </UiEntity>
-  )
+  return null
 }

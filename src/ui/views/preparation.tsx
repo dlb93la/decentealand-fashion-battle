@@ -23,7 +23,7 @@ export function PreparationView({ state: s, network: n, mine: m, controller: ctr
   const page = Math.min(ctrl.wardrobePage, pages - 1)
   const ownsSparkles = !!s.accounts[m?.playerId || '']?.owned.includes('sparkles')
   const chooseGroup = (i: number) => { ctrl.category = i; ctrl.wardrobePage = 0; ctrl.wardrobeFilter = 'All' }
-  return <UiEntity uiTransform={{ positionType: 'absolute', position: { left: 12, bottom: 12 },
+  return <UiEntity uiTransform={{ positionType: 'absolute', position: { left: 12, bottom: ctrl.wardrobeOpen ? 80 : 12 },
     width, height: ctrl.wardrobeOpen ? height : rowHeight + 16, padding: 8, flexDirection: 'column' }}
     uiBackground={{ color: THEME_COLORS.glassBg }}>
     {ctrl.wardrobeOpen ? <UiEntity uiTransform={{ width: '100%', height: height - rowHeight - 24, flexDirection: 'column' }}>

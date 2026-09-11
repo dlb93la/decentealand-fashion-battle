@@ -3,7 +3,7 @@ import { UiEntity, Label } from './primitives'
 import { FashionNetwork } from '../network'
 import { THEME_COLORS, UI_DIMENSIONS, panelWidth } from './theme'
 import { UiController, uiController } from './controller'
-import { HeaderPill, TopRightBadge, ActionButton } from './components'
+import { TopRightBadge, ActionButton } from './components'
 import { LobbyView } from './views/lobby'
 import { PreparationView } from './views/preparation'
 import { RunwayView } from './views/runway'
@@ -88,32 +88,22 @@ export function renderUi(n: FashionNetwork, controller: UiController = uiControl
         pointerFilter: 'none'
       }}
     >
-      {/* 1. Minimalist Top Center Pill Bar */}
-      <HeaderPill state={s} memberCount={n.members.length} />
-      {['RUNWAY', 'VOTING', 'DUEL_RESULT'].includes(s.phase) && s.duels[s.duelIndex] ?
-        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: panelWidth(1000) < 900 ? 136 : 76, left: '50%' },
-          margin: { left: -panelWidth(500) / 2 }, width: panelWidth(500), height: 48,
-          flexDirection: 'row', borderWidth: 1, borderColor: THEME_COLORS.pink, pointerFilter: 'none' }}
-          uiBackground={{ color: THEME_COLORS.overlayBg }}>
-          {['aId', 'bId'].map((slot, i) => {
-            const duel = s.duels[s.duelIndex]
-            const id = slot === 'aId' ? duel.aId : duel.bId
-            const name = s.cast.find(c => c.id === id)?.name || 'Contestant'
-            return <Label key={slot} value={`${i === 0 ? 'A' : 'B'}  /  ${name.slice(0, 24)}`}
-              fontSize={18} color={i === 0 ? THEME_COLORS.mint : THEME_COLORS.gold}
-              uiTransform={{ width: '50%', height: 48, padding: 4, pointerFilter: 'none' }} />
-          })}
-        </UiEntity> : null}
+      {/* Informational HUD temporarily hidden; world displays carry phase and time. */}
+      <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 12, right: 12 } }}>
+        <ActionButton value={controller.lighting === 'day' ? 'LIGHTING: DAY' : 'LIGHTING: NIGHT'}
+          width={170} height={44} fontSize={14}
+          action={() => { controller.lighting = controller.lighting === 'day' ? 'night' : 'day' }} />
+      </UiEntity>
       {s.phase === 'PREPARATION' && activeTab === 'game' ?
         <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 120, right: 4 } }}>
           <ActionButton value="ROTATE LOOK" width={100} height={44} fontSize={12}
             action={() => { controller.previewAngle = (controller.previewAngle + 45) % 360 }} />
         </UiEntity> : null}
 
-      {m && (controller.wardrobeOpen || ['RUNWAY', 'VOTING', 'DUEL_RESULT', 'RESULTS'].includes(s.phase)) ?
-        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 76, left: 12 } }}>
+      {activeTab === 'game' && m && (controller.wardrobeOpen || ['RUNWAY', 'VOTING', 'DUEL_RESULT', 'RESULTS'].includes(s.phase)) ?
+        <UiEntity uiTransform={{ positionType: 'absolute', position: { bottom: 12, left: '50%' }, margin: { left: -110 }, width: 220, height: 56 }}>
           <ActionButton value={controller.wardrobeOpen || controller.watchStage ? 'FREE CAMERA' : 'WATCH STAGE'}
-            width={176} height={48} fontSize={16}
+            width={220} height={56} fontSize={20} borderColor={THEME_COLORS.gold}
             action={() => {
               if (controller.wardrobeOpen || controller.watchStage) controller.freeCamera()
               else controller.watchStage = true
@@ -144,7 +134,7 @@ export function renderUi(n: FashionNetwork, controller: UiController = uiControl
         <UiEntity
           uiTransform={{
             positionType: 'absolute',
-            position: { bottom: 32, left: '50%' },
+            position: { bottom: 88, left: '50%' },
             margin: { left: -panelWidth(360) / 2 },
             width: panelWidth(360),
             height: 64
