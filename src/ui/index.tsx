@@ -90,6 +90,20 @@ export function renderUi(n: FashionNetwork, controller: UiController = uiControl
     >
       {/* 1. Minimalist Top Center Pill Bar */}
       <HeaderPill state={s} memberCount={n.members.length} />
+      {['RUNWAY', 'VOTING', 'DUEL_RESULT'].includes(s.phase) && s.duels[s.duelIndex] ?
+        <UiEntity uiTransform={{ positionType: 'absolute', position: { top: panelWidth(1000) < 900 ? 136 : 76, left: '50%' },
+          margin: { left: -panelWidth(500) / 2 }, width: panelWidth(500), height: 48,
+          flexDirection: 'row', borderWidth: 1, borderColor: THEME_COLORS.pink, pointerFilter: 'none' }}
+          uiBackground={{ color: THEME_COLORS.overlayBg }}>
+          {['aId', 'bId'].map((slot, i) => {
+            const duel = s.duels[s.duelIndex]
+            const id = slot === 'aId' ? duel.aId : duel.bId
+            const name = s.cast.find(c => c.id === id)?.name || 'Contestant'
+            return <Label key={slot} value={`${i === 0 ? 'A' : 'B'}  /  ${name.slice(0, 24)}`}
+              fontSize={18} color={i === 0 ? THEME_COLORS.mint : THEME_COLORS.gold}
+              uiTransform={{ width: '50%', height: 48, padding: 4, pointerFilter: 'none' }} />
+          })}
+        </UiEntity> : null}
       {s.phase === 'PREPARATION' && activeTab === 'game' ?
         <UiEntity uiTransform={{ positionType: 'absolute', position: { top: 120, right: 4 } }}>
           <ActionButton value="ROTATE LOOK" width={100} height={44} fontSize={12}

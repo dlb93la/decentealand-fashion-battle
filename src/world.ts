@@ -21,18 +21,18 @@ import { Outfit, THEMES, inventory, CONFIG, hasSparkles } from './data'
 import { State, outfitRevealed } from './model'
 import { createAvatarConfig, poseEmoteUrn, PRIVACY_ROBE_WEARABLES } from './avatar-factory'
 
-// Luxury Club & Runway Color Palette
-const CLUB_BLACK = '#24262A'
-const CLUB_FLOOR = '#76716A'
-const HOF_FLOOR = '#8B8378'
-const CLUB_RUNWAY = '#B0AAA0'
-const CLUB_STEEL = '#1C2030'
-const GLASS_TINT = '#0F1424'
-const NEON_CYAN = '#E7E5DF'
-const NEON_MAGENTA = '#D4CABE'
-const NEON_PURPLE = '#A7A39B'
-const NEON_GOLD = '#C9B894'
-const NEON_MINT = '#ECEBE5'
+// Warm festival lounge: peach architecture, coral accents, lush greens and gold.
+const CLUB_BLACK = '#ED9675'
+const CLUB_FLOOR = '#F7DCC4'
+const HOF_FLOOR = '#F3CBA5'
+const CLUB_RUNWAY = '#FFEEE0'
+const CLUB_STEEL = '#AE4164'
+const GLASS_TINT = '#F5B991'
+const NEON_CYAN = '#36D6AC'
+const NEON_MAGENTA = '#FF668B'
+const NEON_PURPLE = '#B66AE8'
+const NEON_GOLD = '#FFC857'
+const NEON_MINT = '#C6F4B0'
 const IVORY = '#F3EFE8'
 
 function paint(
@@ -46,12 +46,17 @@ function paint(
 ) {
   const color = Color4.fromHexString(hex)
   color.a = alpha
+  // Indoor PBR shadows desaturate broad walls; keep the architectural palette stable.
+  if (hex === CLUB_BLACK || hex === '#FFF0DA') {
+    Material.setBasicMaterial(e, { diffuseColor: color, castShadows: false })
+    return
+  }
   Material.setPbrMaterial(e, {
     albedoColor: color,
     ...(alpha < 1 ? { transparencyMode: 2 } : {}), // SDK MTM_ALPHA_BLEND
     roughness,
     metallic,
-    ...(glow ? { emissiveColor: Color3.fromHexString(hex), emissiveIntensity: Math.min(emissiveIntensity, 0.04) } : {})
+    ...(glow ? { emissiveColor: Color3.fromHexString(hex), emissiveIntensity: Math.min(emissiveIntensity, 0.35) } : {})
   })
 }
 
@@ -106,8 +111,8 @@ function label(text: string, x: number, y: number, z: number, size = 2, color = 
     text,
     fontSize: size,
     textColor: Color4.fromHexString(color),
-    outlineColor: Color4.fromHexString(CLUB_BLACK),
-    outlineWidth: 0.14
+    outlineColor: Color4.fromHexString('#47203D'),
+    outlineWidth: 0.08
   })
   Billboard.create(e)
   return e
@@ -297,6 +302,7 @@ export class FashionWorld {
   voteMarker: Entity
   lastChampion = ''
   private privacyKey = ''
+  private sideScreens: Entity[] = []
   themeBanner: Entity
   hallSign: Entity
   clockLeft: Entity
@@ -318,13 +324,19 @@ export class FashionWorld {
     // 1. GRAND NIGHTCLUB ARCHITECTURE (32x32m, 10m HIGH CEILING)
     // ==========================================
     // Main Runway Hall Reflective Floor (24m wide x 32m deep)
-    box(12.0, 0.05, 16.0, 24.0, 0.1, 32.0, CLUB_FLOOR, undefined, true, false, 0.2, 0.8)
+    box(12.0, 0.05, 16.0, 24.0, 0.1, 32.0, CLUB_FLOOR, undefined, true, false, 0.85, 0.0)
 
     // Isolated Hall of Fame Annex Floor (8m wide x 32m deep)
-    box(36.0, 0.05, 16.0, 24.0, 0.1, 32.0, HOF_FLOOR, undefined, true, false, 0.18, 0.82)
+    box(36.0, 0.05, 16.0, 24.0, 0.1, 32.0, HOF_FLOOR, undefined, true, false, 0.85, 0.0)
+
+    // Saturated lounge runners break up the large light floor without adding obstacles.
+    for (const [x, color] of [[5.4, '#EF6485'], [18.6, '#35B99B']] as const) {
+      const rug = box(x, 0.112, 18, 4.2, 0.018, 6.0, color)
+      Material.setBasicMaterial(rug, { diffuseColor: Color4.fromHexString(color), castShadows: false })
+    }
 
     // High Industrial Ceiling (10m high covering 32x32m)
-    box(24.0, 10.0, 16.0, 48.0, 0.2, 32.0, CLUB_BLACK, undefined, true)
+    box(24.0, 10.0, 16.0, 48.0, 0.2, 32.0, '#FFF0DA', undefined, true)
 
     // Outer Perimeter Enclosure Walls (10m high)
     // Back perimeter wall
@@ -382,7 +394,7 @@ export class FashionWorld {
     // 4. ELEVATED RUNWAY CATWALK & PHYSICAL BARRIERS
     // ==========================================
     // Central runway catwalk (width 3.6m, depth 14.0m, height 0.38m from Z=7 to Z=21)
-    box(12.0, 0.19, 14.0, 6.0, 0.38, 14.0, CLUB_RUNWAY, undefined, true, false, 0.15, 0.85)
+    box(12.0, 0.19, 14.0, 6.0, 0.38, 14.0, CLUB_RUNWAY, undefined, true, false, 0.7, 0.0)
 
     // Runway illuminated track edges
     box(9.02, 0.39, 14.0, 0.06, 0.04, 14.0, NEON_GOLD, undefined, false, true, 0.1, 0.1, 1.2)
@@ -418,12 +430,43 @@ export class FashionWorld {
     box(12.0, 1.1, 28.88, 3.0, 0.6, 0.04, NEON_PURPLE, undefined, false, true, 0.1, 0.1, 1.2)
     label('DJ BOOTH', 12.0, 1.85, 28.9, 0.8, NEON_PURPLE)
 
-    // Billboard & Grand Theme Signage on Backstage Wall
-    box(12.0, 7.2, 31.75, 12.0, 2.4, 0.1, '#0C0E1A')
-    box(12.0, 7.2, 31.7, 12.2, 2.6, 0.04, NEON_GOLD, undefined, false, true, 0.1, 0.1, 1.2)
-    label('DECENTEALAND', 12.0, 7.8, 31.6, 2.2, NEON_GOLD)
-    label('F A S H I O N   B A T T L E', 12.0, 7.1, 31.6, 1.4, IVORY)
-    this.themeBanner = label('THEME: INITIALIZING...', 12.0, 6.4, 31.6, 1.5, NEON_CYAN)
+    // Flat, high-contrast sign: four border rails, never a full plate in front of text.
+    const screen = (x: number, y: number, z: number, w: number, h: number, accent: string, parent?: Entity) => {
+      const face = box(x, y, z, w, h, 0.16, '#47203D', parent)
+      Material.setBasicMaterial(face, { diffuseColor: Color4.fromHexString('#47203D'), castShadows: false })
+      for (const edge of [
+        [x - w / 2, y, 0.10, h + 0.1], [x + w / 2, y, 0.10, h + 0.1],
+        [x, y - h / 2, w, 0.10], [x, y + h / 2, w, 0.10]
+      ]) box(edge[0], edge[1], z - 0.12, edge[2], edge[3], 0.08, accent, parent, false, true)
+    }
+    const screenText = (text: string, x: number, y: number, z: number, size: number, color = IVORY, parent?: Entity) => {
+      const e = label(text, x, y, z, size, color)
+      if (parent) Transform.getMutable(e).parent = parent
+      Billboard.deleteFrom(e)
+      TextShape.getMutable(e).outlineWidth = 0
+      return e
+    }
+    screen(12, 5.1, 30.7, 10.2, 3.2, NEON_GOLD)
+    screenText('FASHION BATTLE', 12, 5.95, 30.5, 8, '#FFFFFF')
+    screenText('DRESS  /  POSE  /  VOTE', 12, 5.12, 30.5, 3.6, NEON_MINT)
+    this.themeBanner = screenText('YOUR NEXT GREAT LOOK', 12, 4.3, 30.5, 4, '#FFD676')
+    // Two side-wall-style broadcast displays flanking the stage, readable from the audience.
+    for (const x of [3.7, 20.3]) {
+      screen(x, 4.8, 30.5, 4.8, 2.7, x < 12 ? NEON_CYAN : NEON_MAGENTA)
+      screenText(x < 12 ? 'ON THE RUNWAY' : 'MAKE IT YOURS', x, 5.55, 30.28, 3.3, '#FFFFFF')
+      this.sideScreens.push(screenText('SHOW STARTING SOON', x, 4.83, 30.28, 2.7, NEON_GOLD))
+      screenText(x < 12 ? 'EVERY LOOK TELLS A STORY' : 'YOUR STYLE. YOUR SPOTLIGHT.', x, 4.1, 30.28, 1.65, NEON_MINT)
+    }
+
+    // Broadcast TVs mounted directly on the two side walls, facing into the lounge.
+    for (const [x, z, yaw] of [[0.4, 18, -90], [23.6, 22, 90]]) {
+      const mount = engine.addEntity()
+      Transform.create(mount, { position: { x, y: 4.3, z }, rotation: Quaternion.fromEulerDegrees(0, yaw, 0) })
+      screen(0, 0, 0, 5.2, 2.8, NEON_CYAN, mount)
+      screenText('FASHION LIVE', 0, 0.85, -0.2, 4, '#FFFFFF', mount)
+      this.sideScreens.push(screenText('WELCOME TO THE SHOW', 0, 0, -0.2, 3.4, NEON_GOLD, mount))
+      screenText('DRESS. POSE. VOTE.', 0, -0.85, -0.2, 2.5, NEON_MINT, mount)
+    }
 
     // ==========================================
     // 6. DUAL WARDROBE PROVADORES (WEST & EAST)
@@ -463,7 +506,7 @@ export class FashionWorld {
     barrier(39.8, 0.55, 18.0, 0.06, 1.4, 3.4, NEON_GOLD)
     barrier(38.0, 0.55, 16.2, 3.4, 1.4, 0.06, NEON_GOLD)
 
-    this.champion = new AvatarFigure('champion-hof', 'CAMPEÃO', 38.0, 0.66, 18.0, 225, 1.0, false)
+    this.champion = new AvatarFigure('champion-hof', 'CHAMPION', 38.0, 0.66, 18.0, 225, 1.0, false)
     this.hallSign = label('HALL OF FAME\nYour look could be here', 38.0, 3.2, 18.0, 0.95, NEON_GOLD)
 
     // ==========================================
@@ -577,16 +620,47 @@ export class FashionWorld {
     block(20.5, 12, 3.4, 3.4)
     block(38, 18, 3.8, 3.8)
 
-    // Gallery seating, wall panels and planters: detail without particles or neon.
+    // Welcoming lounge furniture and low-poly potted palms, outside circulation paths.
     for (const z of [5, 24, 28]) {
-      box(43, 0.5, z, 5, 0.8, 1.2, '#C2B8AA', undefined, true)
-      box(46.8, 4, z, 0.18, 3, 2.6, '#B3A48C')
+      box(43, 0.5, z, 5, 0.8, 1.2, '#F47F85', undefined, true)
+      box(43, 1.0, z + 0.45, 5, 0.65, 0.25, '#D74777')
+      box(46.8, 4, z, 0.18, 3, 2.6, '#FFC857')
     }
-    for (const z of [5, 18]) {
-      for (const x of [2, 22]) {
-        box(x, 0.45, z, 0.8, 0.8, 0.8, '#B8AEA0', undefined, true)
-        box(x, 1.15, z, 1, 0.8, 1, '#61705C')
+    const palm = (x: number, z: number, potColor: string) => {
+      const pot = box(x, 0.52, z, 0.95, 0.9, 0.95, potColor, undefined, true)
+      MeshRenderer.setCylinder(pot, 0.42, 0.5)
+      Material.setBasicMaterial(pot, { diffuseColor: Color4.fromHexString(potColor), castShadows: false })
+      box(x, 0.99, z, 0.75, 0.07, 0.75, '#754830')
+      const trunk = box(x, 1.65, z, 0.12, 1.4, 0.12, '#916337')
+      MeshRenderer.setCylinder(trunk, 0.5, 0.35)
+      for (let i = 0; i < 7; i++) {
+        const angle = i * Math.PI * 2 / 7
+        const leaf = box(x + Math.cos(angle) * 0.43, 2.15 + (i % 2) * 0.24,
+          z + Math.sin(angle) * 0.43, 0.38, 0.09, 1.55, i % 2 ? '#39B86B' : '#198C57')
+        Transform.getMutable(leaf).rotation = Quaternion.fromEulerDegrees(25, 90 - i * 360 / 7, 12)
       }
+    }
+    for (const z of [5, 19, 29]) for (const x of [1.7, 22.3]) palm(x, z, x < 12 ? '#E97050' : '#ECAF38')
+    palm(33, 21, '#D74777')
+    palm(44, 18, '#E97050')
+
+    // Coral wall fins and mint/gold light bars create depth without particles or video downloads.
+    for (const x of [1, 7.1, 16.9, 23]) {
+      box(x, 4.5, 31.55, 0.35, 8, 0.3, x < 12 ? '#FF668B' : '#36D6AC')
+    }
+    for (const x of [1.0, 23.0]) for (const z of [7, 14, 27]) {
+      box(x, 3.8, z, 0.18, 2.5, 0.4, NEON_GOLD, undefined, false, true)
+      box(x, 5.1, z, 0.5, 0.12, 0.65, '#FF668B')
+    }
+    // Visible reflector housings and warm lenses complement the existing neutral outfit lights.
+    for (const x of [6.5, 17.5]) {
+      const housing = box(x, 5.8, 19, 0.75, 0.7, 1, '#AE4164')
+      Transform.getMutable(housing).rotation = Quaternion.fromEulerDegrees(28, 0, 0)
+      box(x, 5.58, 18.55, 0.58, 0.4, 0.08, '#FFE5A0', undefined, false, true)
+      const light = engine.addEntity()
+      Transform.create(light, { position: { x, y: 5.5, z: 18.4 }, rotation: Quaternion.fromEulerDegrees(35, 180, 0) })
+      LightSource.create(light, { type: LightSource.Type.Spot({ innerAngle: 22, outerAngle: 45 }),
+        color: Color3.create(1, 0.92, 0.8), intensity: 900, range: 12, shadow: false })
     }
     const galleryFill = engine.addEntity()
     Transform.create(galleryFill, { position: { x: 39, y: 6, z: 15 } })
@@ -623,8 +697,8 @@ export class FashionWorld {
     for (let i = 0; i < 6; i++) {
       const x = 5.0 + i * 2.8
       // Initialize with privacy robe (neutral look)
-      this.figures.push(new AvatarFigure(`contestant-${i}`, `Participante ${i + 1}`, x, 0.52, 26.5, 180, 1.0, true))
-      this.names.push(label('', x, 3.2, 26.5, 0.7))
+      this.figures.push(new AvatarFigure(`contestant-${i}`, `Contestant ${i + 1}`, x, 0.52, 26.5, 180, 1.0, true))
+      this.names.push(label('', x, 2.8, 26.5, 2.1, '#47203D'))
     }
 
     // ==========================================
@@ -717,7 +791,9 @@ export class FashionWorld {
 
     // Theme banner text on backstage wall
     TextShape.getMutable(this.themeBanner).text =
-      s.phase === 'LOBBY' ? 'CREATE YOUR BEST LOOK' : THEMES[s.theme].title.toUpperCase()
+      s.phase === 'LOBBY' ? 'YOUR NEXT GREAT LOOK' : THEMES[s.theme].title.toUpperCase()
+    for (const screen of this.sideScreens) TextShape.getMutable(screen).text =
+      `${s.phase.replace(/_/g, ' ')}\n${remainingSec}s`
 
     const duel = s.duels && s.duels[s.duelIndex]
     const isDuelActive = (s.phase === 'RUNWAY' || s.phase === 'VOTING' || s.phase === 'DUEL_RESULT') && !!duel
@@ -775,12 +851,12 @@ export class FashionWorld {
           posX = 10.9
           posY = 0.39
           posZ = 14.0
-          labelText = `[A] ${c.name}`
+          labelText = 'A'
         } else if (c.id === duel.bId) {
           posX = 13.1
           posY = 0.39
           posZ = 14.0
-          labelText = `[B] ${c.name}`
+          labelText = 'B'
         }
       } else if (s.phase === 'RESULTS' && s.results.length > 0) {
         if (s.results[0]?.id === c.id) {
@@ -806,7 +882,8 @@ export class FashionWorld {
       }
 
       TextShape.getMutable(this.names[i]).text = labelText
-      Transform.getMutable(this.names[i]).position = { x: posX, y: posY + 2.7, z: posZ }
+      TextShape.getMutable(this.names[i]).fontSize = onStage ? 2 : 1.25
+      Transform.getMutable(this.names[i]).position = { x: posX, y: posY + 2.05, z: posZ }
       f.place(posX, posY, posZ)
     })
 

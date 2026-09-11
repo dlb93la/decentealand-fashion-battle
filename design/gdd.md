@@ -90,6 +90,8 @@ The arena uses six parcels in a 3×2 layout. Assets include local thumbnails and
 
 ## Presentation and audio
 
+The delivery arena uses a warm peach/coral/cream palette with mint and gold accents, potted palms, lounge seating, visible reflector fixtures and live phase/timer displays on the side walls. A contrasting central sign and an A/B interface panel keep theme and contestant identities readable. TVs are scene-native information displays, not video streams.
+
 English scene controls, theme descriptions and delivery documentation. A 40-second local instrumental loop accompanies gameplay. A three-second chime signals phase changes and a short sound acknowledges voting. Background audio ducks for effects and returns afterward. Distinct victory audio and sound feedback for every clothing/save action are not part of the implemented polish.
 
 ## Explicit revisions from version 1.0

@@ -42,34 +42,8 @@ export function RunwayView(props: { state: State; network: FashionNetwork; mine?
         />
       </UiEntity>
     )
-  if (!isMeInDuel) {
-    // Spectator view: sleek floating notification pill at bottom
-    return (
-      <UiEntity
-        uiTransform={{
-          positionType: 'absolute',
-          position: { bottom: 32, left: '50%' },
-          margin: { left: -panelWidth(440) / 2 },
-          width: panelWidth(440),
-          height: 48,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderWidth: 1,
-          borderColor: THEME_COLORS.glassBorder
-        }}
-        uiBackground={{ color: THEME_COLORS.glassBg }}
-      >
-        <Label
-          value={`[A] ${candA?.name || 'Contestant A'}   ×   [B] ${candB?.name || 'Contestant B'}`}
-          fontSize={16}
-          color={THEME_COLORS.gold}
-          textAlign="middle-center"
-          uiTransform={{ width: '100%', height: '100%', pointerFilter: 'none' }}
-        />
-      </UiEntity>
-    )
-  }
+  // The shared A/B header already identifies both contestants for spectators.
+  if (!isMeInDuel) return <UiEntity />
 
   // Active duelist view: floating pose selector
   return (

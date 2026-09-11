@@ -8,6 +8,8 @@ Criteria: [installed Game Design skill](../.agents/skills/game-design/SKILL.md),
 
 ## Final changes
 
+The subsequent [visual-polish pass](visual-polish.md) replaces the muted arena/signage and adds plants, fixtures, live information TVs and larger contestant labels. Its screenshots supersede the earlier art presentation; game rules are unchanged.
+
 - Active duelists stay neutral throughout the intro and reveal when pose time begins. Inactive contestants stay neutral; final results reveal everyone.
 - SAVE stores a local snapshot. First DRESS opening each round restores it; reopening within that round preserves edits. The deadline still blocks editing/restoration.
 - Default camera is free. WATCH STAGE enables framing; FREE CAMERA releases it and exits fitting. Presentation never teleports players or disables locomotion. Exiting remains effective across phases until another explicit opt-in.

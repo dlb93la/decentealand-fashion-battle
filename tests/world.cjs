@@ -33,6 +33,8 @@ function fixture() {
     ecs[name] = make()
   ecs.engine.removeEntity = e => { for (const component of Object.values(ecs)) component.data?.delete(e) }
   ecs.MeshRenderer.setBox = (e) => ecs.MeshRenderer.create(e, {})
+  ecs.MeshRenderer.setCylinder = (e) => ecs.MeshRenderer.create(e, {})
+  ecs.Material.setBasicMaterial = (e, v) => ecs.Material.create(e, v)
   ecs.MeshCollider.setBox = (e) => ecs.MeshCollider.create(e, {})
   ecs.Material.setPbrMaterial = (e, v) => ecs.Material.create(e, v)
   ecs.LightSource.Type = { Spot: (x) => x, Point: (x) => x }

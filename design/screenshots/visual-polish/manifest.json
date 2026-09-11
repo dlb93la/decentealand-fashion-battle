@@ -1,0 +1,20 @@
+{
+  "source": "Unretouched local Bevy Web desktop screenshots; one visitor and bots",
+  "images": [
+    {
+      "file": "01-lounge-side-tv.png",
+      "timestamp": "2026-09-11T16:19:29.844Z",
+      "sha256": "3ddfb946954ebb7accf65916e4ad642b2c28c0fc7084fea8fe366d76424cee2f"
+    },
+    {
+      "file": "02-warm-lounge-overview.png",
+      "timestamp": "2026-09-11T16:29:39.973Z",
+      "sha256": "e6da99dcd9827f9c9bbc695dd48491c915fa1e970e87d56218b82461054af665"
+    },
+    {
+      "file": "03-remodeled-stage.png",
+      "timestamp": "2026-09-11T16:31:47.410Z",
+      "sha256": "02380471d65c6dd05b3781793cfbf3924f73208e7dc926f2408594383e2e9770"
+    }
+  ]
+}

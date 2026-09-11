@@ -2,19 +2,19 @@ import { Color4 } from '@dcl/sdk/math'
 import { engine, UiCanvasInformation } from '@dcl/sdk/ecs'
 
 export const THEME_COLORS = {
-  ink: Color4.fromHexString('#202336'),
-  cream: Color4.fromHexString('#F3EFE8'),
-  pink: Color4.fromHexString('#C6BCA9'),
-  mint: Color4.fromHexString('#B4CCB9'),
-  activeBg: Color4.fromHexString('#365D56'),
-  disabledText: Color4.fromHexString('#85858C'),
-  disabledBorder: Color4.fromHexString('#2D3246'),
-  overlayBg: Color4.fromHexString('#0D101CEE'),
+  ink: Color4.fromHexString('#47203D'),
+  cream: Color4.fromHexString('#FFF7EC'),
+  pink: Color4.fromHexString('#FF8B9E'),
+  mint: Color4.fromHexString('#ACEDB7'),
+  activeBg: Color4.fromHexString('#24754C'),
+  disabledText: Color4.fromHexString('#D0A6B7'),
+  disabledBorder: Color4.fromHexString('#946079'),
+  overlayBg: Color4.fromHexString('#47203DF5'),
   pendingYellow: Color4.fromHexString('#FFD166'),
-  gold: Color4.fromHexString('#D9D0BF'),
-  cyan: Color4.fromHexString('#E4E8E6'),
-  glassBg: Color4.fromHexString('#0B0D1AEE'),
-  glassBorder: Color4.fromHexString('#262D45')
+  gold: Color4.fromHexString('#FFD676'),
+  cyan: Color4.fromHexString('#B9FFE6'),
+  glassBg: Color4.fromHexString('#47203DF2'),
+  glassBorder: Color4.fromHexString('#EA8299')
 }
 
 /** Match index.ts's interactable inset before choosing physical-pixel widths. */
