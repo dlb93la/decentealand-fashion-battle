@@ -22,25 +22,35 @@ export function PreparationView({ state: s, network: n, mine: m, controller: ctr
   const pages = Math.max(1, Math.ceil(items.length / pageSize))
   const page = Math.min(ctrl.wardrobePage, pages - 1)
   const ownsSparkles = !!s.accounts[m?.playerId || '']?.owned.includes('sparkles')
+  const rows = <T,>(values: T[], columns: number): T[][] => Array.from({ length: Math.ceil(values.length / columns) }, (_, i) => values.slice(i * columns, (i + 1) * columns))
+  const categoryColumns = width < 440 ? 2 : 4
+  const filterColumns = width < 440 ? 2 : 3
   const chooseGroup = (i: number) => { ctrl.category = i; ctrl.wardrobePage = 0; ctrl.wardrobeFilter = 'All' }
   return <UiEntity uiTransform={{ positionType: 'absolute', position: { left: 12, bottom: ctrl.wardrobeOpen ? 80 : 12 },
     width, height: ctrl.wardrobeOpen ? height : rowHeight + 16, padding: 8, flexDirection: 'column' }}
     uiBackground={{ color: THEME_COLORS.glassBg }}>
-    {ctrl.wardrobeOpen ? <UiEntity uiTransform={{ width: '100%', height: height - rowHeight - 24, flexDirection: 'column', overflow: 'scroll' }}>
-      <UiEntity uiTransform={{ width: '100%', height: rowHeight * 2, flexDirection: 'row', flexWrap: 'wrap', flexShrink: 0 }}>
-        {wardrobeGroups.map((g, i) => <ActionButton key={g.name} variant="category" value={g.name} width={(width - 16) / 4 - 8}
-          height={rowHeight - 8} fontSize={14} active={group === g} action={() => chooseGroup(i)} />)}
-      </UiEntity>
-      <UiEntity uiTransform={{ width: '100%', height: rowHeight, flexDirection: 'row', flexShrink: 0 }}>
-        {types.map(type => <ActionButton key={type} variant="filter" value={type} width={(width - 16) / types.length - 8}
-          height={rowHeight - 8} fontSize={14} active={filter === type}
-          action={() => { ctrl.wardrobeFilter = type; ctrl.wardrobePage = 0 }} />)}
-      </UiEntity>
-      <UiEntity uiTransform={{ width: '100%', height: Math.ceil(pageSize / 2) * (itemHeight + 12), flexDirection: 'row', flexWrap: 'wrap', flexShrink: 0 }}>
-        {items.slice(page * pageSize, (page + 1) * pageSize).map(item => {
+    {ctrl.wardrobeOpen ? <UiEntity uiTransform={{ width: '100%', height: height - rowHeight - 24, flexDirection: 'column', flexShrink: 0, overflow: 'scroll' }}>
+      {rows(wardrobeGroups, categoryColumns).map((row, rowIndex) => <UiEntity key={'groups' + rowIndex}
+        uiTransform={{ width: '100%', height: rowHeight, flexDirection: 'row', flexShrink: 0 }}>
+        {row.map(g => <UiEntity key={g.name} uiTransform={{ width: `${100 / categoryColumns}%`, height: rowHeight, padding: 4, flexShrink: 0 }}>
+          <ActionButton variant="category" value={g.name} width="100%" margin={0}
+            height={rowHeight - 8} fontSize={14} active={group === g} action={() => chooseGroup(wardrobeGroups.indexOf(g))} />
+        </UiEntity>)}
+      </UiEntity>)}
+      {rows(types, filterColumns).map((row, rowIndex) => <UiEntity key={'filters' + rowIndex}
+        uiTransform={{ width: '100%', height: rowHeight, flexDirection: 'row', flexShrink: 0 }}>
+        {row.map(type => <UiEntity key={type} uiTransform={{ width: `${100 / filterColumns}%`, height: rowHeight, padding: 4, flexShrink: 0 }}>
+          <ActionButton variant="filter" value={type} width="100%" margin={0}
+            height={rowHeight - 8} fontSize={14} active={filter === type}
+            action={() => { ctrl.wardrobeFilter = type; ctrl.wardrobePage = 0 }} />
+        </UiEntity>)}
+      </UiEntity>)}
+      {rows(items.slice(page * pageSize, (page + 1) * pageSize), 2).map((row, rowIndex) => <UiEntity key={'items' + rowIndex}
+        uiTransform={{ width: '100%', height: itemHeight + 12, flexDirection: 'row', flexShrink: 0 }}>
+        {row.map(item => {
           const unavailable = item.slot === 'Effects' && item.index === 1 && !ownsSparkles
-          return <ActionButton key={item.slot + item.index} variant="item" value={unavailable ? 'Sparkles — in shop' : item.name}
-            width={(width - 16) / 2 - 12} height={itemHeight} fontSize={15}
+          return <UiEntity key={item.slot + item.index} uiTransform={{ width: '50%', height: itemHeight + 12, padding: 6, flexShrink: 0 }}><ActionButton variant="item" value={unavailable ? 'Sparkles — in shop' : item.name}
+            width="100%" margin={0} height={itemHeight} fontSize={15}
             thumbnail={wearableThumbnail(item.slot, item.index)}
             borderColor={item.slot === 'Head' ? Color4.fromHexString(item.color) : undefined}
             active={!m?.outfit.customWearables?.length && (m?.outfit[item.slot] ?? 0) === item.index}
@@ -49,9 +59,9 @@ export function PreparationView({ state: s, network: n, mine: m, controller: ctr
               const outfit = { ...m.outfit, [item.slot]: item.index }
               if (item.slot !== 'Effects') { n.nativeWardrobe = false; delete outfit.customWearables }
               n.update({ outfit, round: s.round, ready: false })
-            }} />
+            }} /></UiEntity>
         })}
-      </UiEntity>
+      </UiEntity>)}
       <UiEntity uiTransform={{ width: '100%', height: rowHeight, flexDirection: 'row', flexShrink: 0, justifyContent: 'space-between' }}>
         <ActionButton value="Previous" width="30%" height={rowHeight - 8} fontSize={13} disabled={page === 0}
           action={() => { ctrl.wardrobePage = page - 1 }} />
@@ -61,9 +71,9 @@ export function PreparationView({ state: s, network: n, mine: m, controller: ctr
       </UiEntity>
     </UiEntity> : null}
     <UiEntity uiTransform={{ width: '100%', height: rowHeight, flexDirection: 'row', flexShrink: 0 }}>
-      <ActionButton value={ctrl.wardrobeOpen ? 'SAVE' : 'DRESS'} width="48%" height={rowHeight - 8} fontSize={17}
+      <ActionButton value={ctrl.wardrobeOpen ? 'SAVE' : 'DRESS'} width="46%" height={rowHeight - 8} fontSize={17}
         disabled={locked} action={() => { if (ctrl.wardrobeOpen && m) ctrl.saveLook(m.outfit); else ctrl.openWardrobe(n) }} />
-      <ActionButton value="READY" width="48%" height={rowHeight - 8} fontSize={17}
+      <ActionButton value="READY" width="46%" height={rowHeight - 8} fontSize={17}
         active={!!m?.ready} disabled={locked} action={() => { ctrl.wardrobeOpen = false; n.update({ ready: true, round: s.round }) }} />
     </UiEntity>
   </UiEntity>

@@ -51,6 +51,7 @@ export function ActionButton(props: {
   disabled?: boolean
   borderColor?: Color4
   textColor?: Color4
+  margin?: number
   thumbnail?: string
   variant?: 'category' | 'filter' | 'item'
 }) {
@@ -77,7 +78,7 @@ export function ActionButton(props: {
       uiTransform={{
         width: width as any,
         height: height as any,
-        margin: props.variant === 'item' ? 6 : 4,
+        margin: props.margin ?? (props.variant === 'item' ? 6 : 4),
         padding: props.variant === 'item' ? 4 : 0,
         alignItems: 'center',
         flexDirection: 'row',
@@ -92,7 +93,7 @@ export function ActionButton(props: {
         if (!disabled) action()
       }}
     >
-      {props.thumbnail ? <UiEntity uiTransform={{ width: Math.min(64, height - 8), height: Math.min(72, height - 8), flexShrink: 0, pointerFilter: 'none' }}
+      {props.thumbnail ? <UiEntity uiTransform={{ width: '30%', maxWidth: Math.min(64, height - 8), height: Math.min(72, height - 8), flexShrink: 0, pointerFilter: 'none' }}
         uiBackground={{ textureMode: 'stretch', texture: { src: props.thumbnail } }} /> : null}
       <Label
         value={value}
